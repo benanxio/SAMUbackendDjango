@@ -365,10 +365,52 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO(models.Model):
         db_table = 'MAESTRO_HIS_NUEVO_ARCHIVO_PLANO'
 
 
+
 # Plugins Extras
 
 #class DATA_CNV:
     
 #NV	 Estado	 Cod_EESS	EESS	Primer_Apellido	Segundo Nombres	Edad	Fec_Nac	Gest_Sem	Tipo_Doc	Documento	Cod_EESS_Prenatal	EESS_Prenatal	Fecha	Hora	Sexo	Peso	Talla	Apgar	Perímetro_cefalico	Perímetro_toracico	Malf_Congénita	Tiempo_Lig_Cord	Lactancia_precoz	Primer_Apellido2	Segundo3	Nombres4	Profesión	NColegio	Fecha_Registro	Primer_Apellido5	Segundo_Apellido	Nombres6	Nro	Cond_parto	Ok	Mes	EDAD	Grupo Etareo	neo_his	Bajo_Peso	Gesta Sem	AP	:	AR	A  P G A R	Val_apar	Talla	TA	LLA	his_neo	Crtl_Pre_Nat_en_EESS Apellido_y_Nombre_del_Profesional
 
-
+class DATA_CNV(models.Model):
+    CNV = models.BigIntegerField(primary_key=True)
+    Estado = models.CharField(max_length=255, blank=True, null=True)
+    CodEESS = models.CharField(max_length=255, blank=True, null=True)
+    EESS = models.CharField(max_length=255, blank=True, null=True)
+    pApellidoMadre = models.CharField(max_length=255, blank=True, null=True)
+    sApellidoMadre = models.CharField(max_length=255, blank=True, null=True)
+    nombresMadre = models.CharField(max_length=255, blank=True, null=True)
+    Edad = models.IntegerField(blank=True, null=True)
+    FecNac = models.CharField(max_length=255,blank=True, null=True)
+    Gest_Sem = models.IntegerField(blank=True, null=True)
+    TipoDoc = models.CharField(max_length=255, blank=True, null=True)
+    Documento = models.CharField(max_length=255, blank=True, null=True)
+    Teléfono = models.CharField(max_length=255, blank=True, null=True)
+    CodEESSPrenatal = models.CharField(max_length=255, blank=True, null=True)
+    EESSPrenatal = models.CharField(max_length=255, blank=True, null=True)
+    Fecha = models.CharField(max_length=255,blank=True, null=True)
+    Hora = models.TimeField(blank=True, null=True)
+    Sexo = models.CharField(max_length=255, blank=True, null=True)
+    Peso_g = models.IntegerField(blank=True, null=True)
+    Talla_cm = models.IntegerField(blank=True, null=True)
+    Apgar = models.IntegerField(blank=True, null=True)
+    Perímetrocefálico = models.IntegerField(blank=True, null=True)
+    Perímetrotorácico = models.IntegerField(blank=True, null=True)
+    Malfcongénita = models.CharField(max_length=255, blank=True, null=True)
+    TiempoLigCord = models.CharField(max_length=255, blank=True, null=True)
+    Lactanciaprecoz = models.CharField(max_length=255, blank=True, null=True)
+    pApellidoProfesional = models.CharField(max_length=255, blank=True, null=True)
+    sApellidoProfesional = models.CharField(max_length=255, blank=True, null=True)
+    nombresProfesional = models.CharField(max_length=255, blank=True, null=True)
+    Profesión = models.CharField(max_length=255, blank=True, null=True)
+    NColegio = models.CharField(max_length=255, blank=True, null=True)
+    FechaRegistro = models.CharField(max_length=255,blank=True, null=True)
+    pApellidoResgistrador = models.CharField(max_length=255, blank=True, null=True)
+    sApellidoRegistrador = models.CharField(max_length=255, blank=True, null=True)
+    nombresRegistrador = models.CharField(max_length=255, blank=True, null=True)
+    tipoPartoId = models.IntegerField(blank=True, null=True)
+    tipoParto = models.CharField(max_length=255, blank=True, null=True)
+    
+    class Meta:
+        verbose_name_plural = "DATA_CNV"
+        db_table = 'DATA_CNV'   

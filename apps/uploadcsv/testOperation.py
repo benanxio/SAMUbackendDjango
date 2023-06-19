@@ -79,6 +79,96 @@ class DataValidator:
         self.data = self.data[:num]
         self.count_part_data = len(self.data)
 
+class DataExcelCNVValidator(DataValidator):
+    def __init__(self, filed):
+         super().__init__(filed)
+    
+    def validate_file_type(self):
+        if not self.file.name.lower().endswith('.xls'):
+
+            raise CustomError(
+                error_type=ErrorType.FILE_TYPE_ERROR,
+                message='El archivo debe ser de tipo XLS.'
+            )
+            
+    def read_excel_file(self, skiprows=[0,1,2],skipfooter=1, decimal=','):
+        self.data = pd.read_excel(self.file,skiprows=skiprows,skipfooter=skipfooter, decimal=decimal)
+        self.count_data_orignal_csv = self.data.shape[0]
+        
+    def divide_type_birth(self):
+    
+        #Separamos la data en dos clases (dataframes)
+        # - Dataframe de Parto Normal (1)
+        # - Dataframe de Parto por Cesarea (2)
+        
+        # En caso que solo haya una clase se identifica que tipo es
+
+        #Se crea una nueva columna 'tipoParto' en ambos dataframes con los identificadores
+        
+        posiciones = self.data[self.data['N'] == 1].index
+        
+        if(len(posiciones) > 1):
+            minP, maxP = posiciones
+
+            dfPartoNormal = self.data.iloc[minP:maxP-1].assign(tipoPartoId=1,tipoParto='Normal')
+            dfCesarea = self.data.iloc[maxP:].assign(tipoPartoId=2, tipoParto='Cesarea')
+            
+            self.data = pd.concat([dfPartoNormal, dfCesarea])
+            
+        else:
+            
+            dfpartoGen = self.data[posiciones[0]:]
+            strCodicion = self.data.iloc[:posiciones[0], 0][0]
+            
+            tipoPartoId, tipoParto = [2,'Cesarea'] if 'cesarea' in strCodicion.lower() else [1,'Normal']
+            
+            self.data = dfpartoGen.assign(tipoPartoId=tipoPartoId, tipoParto=tipoParto)
+        
+ 
+    def clean_data(self, columns_to_string=[], columns_to_int=[], columns_to_float=[],rename_columns={}):
+        
+        #Eliminamos las columnas sin nombre, los caracteres no alfabeticos y no numericos
+        self.data = self.data.loc[:, ~self.data.columns.str.contains('^Unnamed')]
+        self.data.columns = self.data.columns.str.replace("[°º. )]","",regex=True).str.replace('(','_')
+        self.data = self.data.rename(columns=rename_columns)
+        
+        self.divide_type_birth()
+        
+        self.data = self.data.drop('N',axis=1)
+        
+        ## Logica HEREDADA
+        
+        # Reemplazar valores faltantes (NaN) con None
+        self.data = self.data.where(pd.notnull(self.data), None)
+        
+        # Convertir columnas numéricas a tipo float
+        num_cols = self.data.select_dtypes(include=[np.number]).columns.tolist()
+        self.data[num_cols] = self.data[num_cols].astype(float)
+        
+        
+        # Convertir valores numéricos a None cuando corresponda
+        self.data[num_cols] = self.data[num_cols].applymap(lambda x: None if pd.isna(x) or pd.isnull(x) else int(x))
+        
+        #opcional convertir columans a int o string o float 
+        
+        # Convertir columnas de fecha a tipo datetime y reemplazar NaT con None
+        date_cols = self.data.select_dtypes(include='datetime').columns.tolist()
+        
+        for col in date_cols:
+            self.data[col] = pd.to_datetime(self.data[col], errors='coerce').dt.date
+            self.data[col] = self.data[col].apply(lambda x: None if pd.isna(x) else x)
+            
+        self.data = self.data.fillna(value=-1)
+        #Luego convertir de -1 a None
+        self.data.replace(to_replace=-1, value=None, inplace=True)
+        self.count_data_processing=len(self.data)
+        
+    def replace_none_strange_values(self, values_=[]):
+         return super().replace_none_strange_values(values_)
+    
+    def split_data(self, num):
+         return super().split_data(num)
+
 
 class ObjectOperations:
     def __init__(self, data):
