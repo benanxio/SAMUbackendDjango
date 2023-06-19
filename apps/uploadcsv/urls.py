@@ -37,6 +37,14 @@ from apps.uploadcsv.views.maestro_ups_views import MAESTRO_HIS_UPS_CSV_View, MAE
 from apps.uploadcsv.views.verify_data_models_views import VerificarDatosAPIView
 from django.urls import path
 
+#---------------- Data CNV ------------------}
+
+from apps.uploadcsv.views.data_cnv_views import (
+     DATA_CNV_CSV_View,
+     DATA_CNV_Delete_View,
+     DATA_CNV_List_View
+)
+
 urls_maestro_actividad = [
     path("upload-csv-maestro_his_actividad_his", MAESTRO_HIS_ACTIVIDAD_HIS_CSV_View.as_view(),
          name="upload-csv-maestro_his_actividad_his"),
@@ -217,6 +225,14 @@ urls_maestro_nominal_test = [
          name="get-all-maestro_his_nuevo_archivo_plano"),
 ]
 
+# -------- DATA_CNV -----------
+
+urls_data_cnv = [
+     path("upload-csv-data_cnv", DATA_CNV_CSV_View.as_view(), name="upload-csv-data_cnv"),
+     path("delete-all-data_cnv", DATA_CNV_Delete_View.as_view(), name="delete-all-data_cnv"),
+     path("get-all-data_cnv",DATA_CNV_List_View.as_view(), name="get-all-data_cnv")
+]
+
 
 urls_extra = [
     path("verify-data-models", VerificarDatosAPIView.as_view(),
@@ -230,4 +246,4 @@ urlpatterns = urls_maestro_colegios + urls_maestro_tipodoc + \
     urls_etnias + urls_otra_condicion + urls_ubigeo + urls_ups + \
     urls_financiador + urls_pais + urls_maestro_profesion + \
     urls_maestro_registrador + urls_maestro_personal + \
-    urls_maestro_paciente + urls_maestro_nominal_test + urls_extra
+    urls_maestro_paciente + urls_maestro_nominal_test + urls_extra + urls_data_cnv
