@@ -2,9 +2,9 @@
   "python.linting.pycodestyleEnabled": false,
   "python.linting.pydocstyleEnabled": false,
   "python.linting.pylintEnabled": true,
-  "python.linting.enabled": true,
+  "python.linting.enabled": false,
   "[python]": {
-    "editor.defaultFormatter": "giyyapan.pyformat"
+    "editor.defaultFormatter": "ms-python.python"
   },
   "python.formatting.provider": "none"
 }
