@@ -1,8 +1,10 @@
 import logging
 import os
-from pathlib import Path
-import environ
 from datetime import timedelta
+from pathlib import Path
+
+import environ
+
 env = environ.Env()
 environ.Env.read_env()
 ENVIRONMENT = env
@@ -116,6 +118,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
+
 # Databases
 DATABASES = {
     "default": env.db("DATABASE_URL", default="postgres:///ninerogues"),
@@ -192,6 +195,7 @@ DJOSER = {
         'current_user': 'apps.user.serializers.UserAcountCreateSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
     },
+    'EMAIL_BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
     'PERMISSIONS': {
         'user_delete': ['rest_framework.permissions.IsAuthenticated', 'user.models.CanDeleteUser'],
     },
@@ -224,25 +228,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 
-# Email Backend
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
 # Others
 
 SITE_DOMAIN = 'localhost:8000'
 SITE_ID = 1
 AUTH_USER_MODEL = "user.UserAccount"
 
-
-# Celery Redis config
-# CELERY_BROKER_URL = 'redis://localhost:6379'
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TIMEZONE = 'UTC'
 
 
 # redis
@@ -257,26 +248,6 @@ CACHES = {
     }
 }
 
-
-# CACHE_TTL = 60 * 15  # Define el tiempo de vida de la caché (opcional)
-
-# CACHES['default']['TIMEOUT'] = CACHE_TTL  # Establece el tiempo de vida de la caché
-
-# CACHE_MIDDLEWARE_ALIAS = 'default'
-# CACHE_MIDDLEWARE_SECONDS = CACHE_TTL
-# CACHE_MIDDLEWARE_KEY_PREFIX = ''
-
-
-# Configuración para especificar el número máximo de tareas en segundo plano que se pueden ejecutar en paralelo
-# BACKGROUND_TASK_RUN_ASYNC = True
-# BACKGROUND_TASK_ASYNC_THREADS = 4
-
-# Configuración para especificar el número máximo de intentos de reintentar una tarea fallida
-# BACKGROUND_TASK_MAX_ATTEMPTS = 3
-
-
-# location
-
 # Configuración de internacionalización
 LANGUAGE_CODE = 'es'
 TIME_ZONE = 'America/Mexico_City'
@@ -289,3 +260,11 @@ USE_TZ = True
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST =  os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD =  os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS =  os.environ.get('EMAIL_USE_TLS')
+DEFAULT_FROM_EMAIL =  os.environ.get('DEFAULT_FROM_EMAIL')
