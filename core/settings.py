@@ -118,7 +118,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
-
 # Databases
 DATABASES = {
     "default": env.db("DATABASE_URL", default="postgres:///ninerogues"),
@@ -155,12 +154,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 1000,
 }
 AUTHENTICATION_BACKENDS = (
-
-
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-
-
 )
 
 
@@ -195,10 +190,7 @@ DJOSER = {
         'current_user': 'apps.user.serializers.UserAcountCreateSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
     },
-    'EMAIL_BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
-    'PERMISSIONS': {
-        'user_delete': ['rest_framework.permissions.IsAuthenticated', 'user.models.CanDeleteUser'],
-    },
+
 
 
 }
@@ -230,10 +222,9 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # Others
 
-SITE_DOMAIN = 'localhost:8000'
+SITE_DOMAIN = os.environ.get("SITE_DOMAIN")
 SITE_ID = 1
 AUTH_USER_MODEL = "user.UserAccount"
-
 
 
 # redis
@@ -260,11 +251,12 @@ USE_TZ = True
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
 ]
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST =  os.environ.get('EMAIL_HOST')
+
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD =  os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS =  os.environ.get('EMAIL_USE_TLS')
-DEFAULT_FROM_EMAIL =  os.environ.get('DEFAULT_FROM_EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')

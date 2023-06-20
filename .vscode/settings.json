@@ -4,7 +4,7 @@
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
   "[python]": {
-    "editor.defaultFormatter": "giyyapan.pyformat"
+    "editor.defaultFormatter": "ms-python.autopep8"
   },
   "python.formatting.provider": "none"
 }
