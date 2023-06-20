@@ -338,7 +338,10 @@ class ServiceDatabase:
             
             print("Buscando ids Unicos")
             unique_objects = {}
+            aea = 0
+            print("Chales si paso :v")
             for _, row in self.data.iterrows():
+                print(f"Entro en {aea}")
                 row_dict = row.to_dict()
                 id_value = row_dict[self.identifier_field]
                 if id_value not in unique_objects:
