@@ -344,7 +344,6 @@ class ServiceDatabase:
                 row_dict = row.to_dict()
                 id_value = row_dict[self.identifier_field]
                 if id_value not in unique_objects:
-                    aea +=1
                     unique_objects[id_value] = self.model(**row_dict)
                 else:
                     print("algo paso con", id_value)
