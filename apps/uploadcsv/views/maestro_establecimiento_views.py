@@ -38,7 +38,7 @@ class MAESTRO_HIS_ESTABLECIMIENTO_CSV_View(APIView, FileValidationMixin):
             dataframe.validate_file_type()
             dataframe.read_csv_file(delimiter=delimiter,encoding=encode)
             
-            dataframe.data = dataframe.data[:1000]
+            #dataframe.data = dataframe.data[:1000]
             
             dataframe.clean_data()
             dataframe.replace_none_strange_values()
