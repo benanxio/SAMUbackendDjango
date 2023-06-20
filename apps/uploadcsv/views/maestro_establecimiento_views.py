@@ -54,7 +54,7 @@ class MAESTRO_HIS_ESTABLECIMIENTO_CSV_View(APIView, FileValidationMixin):
             
             dataframe.data = None
             
-            for dfdata in dataframe.split_data:
+            for dfdata in dataframe.splitData:
                 
                 dataframe.data = dfdata
                 
