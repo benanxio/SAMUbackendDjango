@@ -57,6 +57,7 @@ class MAESTRO_HIS_ESTABLECIMIENTO_CSV_View(APIView, FileValidationMixin):
             for dfdata in dataframe.splitData:
                 
                 dataframe.data = dfdata
+                dataframe.data.reset_index(drop=False, inplace=False)
                 
                 # Creacion de objetos con abase de datos 
                 database = ServiceDatabase(objectDatrame.data,identifier_field,model)
