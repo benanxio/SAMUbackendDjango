@@ -36,14 +36,14 @@ class DataValidator:
         # Obtener la memoria RAM actual del sistema en GB
         ram_actual = psutil.virtual_memory().available / (1024 * 1024 * 1024)
         
-        print("Memoria RAM total: {:.2f} GB".format(ram_total))
-        print("Memoria RAM antes de leer: {:.2f} GB".format(ram_actual))
+        print("Memoria RAM total: {:.3f} GB".format(ram_total))
+        print("Memoria RAM antes de leer: {:.3f} GB".format(ram_actual))
         
         self.data = pd.read_csv(self.file, delimiter=delimiter,
                                 encoding=encoding, na_values=None, usecols=use_cols)
         
         ram_actual = psutil.virtual_memory().available / (1024 * 1024 * 1024)
-        print("Memoria RAM despues de leer: {:.2f} GB".format(ram_actual))
+        print("Memoria RAM despues de leer: {:.3f} GB".format(ram_actual))
         
         self.data = self.data.drop(drop_cols, axis=1)
 
@@ -52,7 +52,7 @@ class DataValidator:
     def clean_data(self, columns_to_string=[], columns_to_int=[], columns_to_float=[]):
 
 
-        print("Limpieza de datos")
+        #print("Limpieza de datos")
         # Reemplazar valores faltantes (NaN) con None
         self.data = self.data.where(pd.notnull(self.data), None)
 
@@ -84,7 +84,7 @@ class DataValidator:
 
     def replace_none_strange_values(self, values_=[]):
         
-        print("Lmpiando datos nulos")
+        #print("Lmpiando datos nulos")
 
         null_strings = ["", "None", "NaT", "N/A", "<NA>.", "n/a", "null", "nan" "NULL", "-", "<NA>", "<nan>", "#N/A", "#N/A N/A", 'SIN DA',
                             'nullnu', "Id_Cita", "'None'",   "Anio",    "Mes",    "Dia",    "Fecha_Atencion",    "Lote",    "Num_Pag",    "Num_Reg",    "Id_Ups",    "Id_Establecimiento",    "Id_Paciente",    "Id_Personal",    "Id_Registrador",    "Id_Financiador",    "Id_Condicion_Establecimiento",    "Id_Condicion_Servicio",    "Edad_Reg",    "Tipo_Edad",    "Anio_Actual_Paciente",    "Mes_Actual_Paciente",    "Dia_Actual_Paciente",    "Id_Turno",    "Codigo_Item",    "Tipo_Diagnostico",    "Valor_Lab",    "Id_Correlativo",    "Id_Correlativo_Lab",    "Peso",    "Talla",    "Hemoglobina",    "Perimetro_Abdominal",    "Perimetro_Cefalico",    "Id_Otra_Condicion",    "Id_Centro_Poblado",    "Fecha_Ultima_Regla",    "Fecha_Solicitud_Hb",    "Fecha_Resultado_Hb",    "Fecha_Registro",    "Fecha_Modificacion",    "Id_Pais"] + values_
@@ -217,7 +217,7 @@ class ObjectOperations:
 
     def validate_columns(self, expected_columns):
         
-        print("validando columnas")
+        #print("validando columnas")
 
         missing_columns = [
             column for column in expected_columns if column not in self.data.columns]
@@ -253,7 +253,7 @@ class ObjectOperations:
 
     def get_field_names_from_instance(self,  instance: models.Model):
         
-        print("obteniendo los nombres de las instancias")
+        #print("obteniendo los nombres de las instancias")
         
         fields = instance._meta.fields
         field_names = [field.name for field in fields]
@@ -340,14 +340,28 @@ class ServiceDatabase:
             unique_objects = {}
             aea = 0
             print("Chales si paso :v")
-            for _, row in self.data.iterrows():
-                print(f"Entro en {aea}")
+            '''for _, row in self.data.iterrows():
+                print(f"Entro en {aea}",end="\r")
                 row_dict = row.to_dict()
                 id_value = row_dict[self.identifier_field]
                 if id_value not in unique_objects:
+                    aea +=1
+                    unique_objects[id_value] = self.model(**row_dict)
+                else:
+                    print("algo paso con", id_value)'''
+                    
+            while(self.data.shape[0]>0):
+                print(f"Entro en {aea}",end="\r")
+                row = self.data.iloc[0]
+                row_dict = row.to_dict()
+                id_value = row_dict[self.identifier_field]
+                if id_value not in unique_objects:
+                    aea +=1
                     unique_objects[id_value] = self.model(**row_dict)
                 else:
                     print("algo paso con", id_value)
+                
+                self.data.drop(index=0, inplace=True)
 
             print("Seteando los objects")
             self.objects = list(unique_objects.values())
