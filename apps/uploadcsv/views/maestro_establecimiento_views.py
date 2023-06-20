@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import time
 from venv import logger
 
@@ -32,24 +33,37 @@ class MAESTRO_HIS_ESTABLECIMIENTO_CSV_View(APIView, FileValidationMixin):
             dataframe = DataValidator(csv_file)
             delimiter = request.data.get('delimiter')
             encode = request.data.get('encode')
+            
+            # Calcula el número de partes en las que se dividirá el DataFrame
+            num_partes = dataframe.data.shape[0] // 1000 + 1
 
-            # procesar y verificar
-            dataframe.validate_file_type()
-            dataframe.read_csv_file(delimiter=delimiter,encoding=encode)   
-            dataframe.clean_data()
-            dataframe.replace_none_strange_values()
+            # Divide el DataFrame en partes de 1000 datos
+
+            dataframe.splitData = np.array_split(dataframe.data, num_partes)
             
-            #operaciones y validaciones1
-            objectDatrame = ObjectOperations(dataframe.data)    
-            objectDatrame.get_field_names_from_instance(instance)
-            objectDatrame.validate_columns(objectDatrame.field_names)
+            dataframe.data = None
             
+            for dfdata in dataframe.split_data:
+                
+                dataframe.data = dfdata
+                # procesar y verificar
+                dataframe.validate_file_type()
+                dataframe.read_csv_file(delimiter=delimiter,encoding=encode)   
+                dataframe.clean_data()
+                dataframe.replace_none_strange_values()
+                
+                #operaciones y validaciones1
+                objectDatrame = ObjectOperations(dataframe.data)    
+                objectDatrame.get_field_names_from_instance(instance)
+                objectDatrame.validate_columns(objectDatrame.field_names)
+                
+                
+                # Creacion de objetos con abase de datos 
+                database = ServiceDatabase(objectDatrame.data,identifier_field,model)
             
-            # Creacion de objetos con abase de datos 
-            database = ServiceDatabase(objectDatrame.data,identifier_field,model)
-           
-            database.create_objects_from_data()
-            database.saveData(ignore_conflicts=True)
+                database.create_objects_from_data()
+                database.saveData(ignore_conflicts=True)
+            
             is_data_added =  (database.data_count_save - database.count_data_before ) > 0            
             
             end_time = time.time()  

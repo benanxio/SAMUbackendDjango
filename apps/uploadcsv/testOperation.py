@@ -8,6 +8,7 @@ import psutil
 class DataValidator:
     def __init__(self, filed):
         self.data = None
+        self.splitData = []
         self.file = filed
         self.count_data_orignal_csv = 0
         self.count_part_data = 0
@@ -339,19 +340,7 @@ class ServiceDatabase:
             print("Buscando ids Unicos")
             unique_objects = {}
             print("Chales si paso :v")
-            '''for _, row in self.data.iterrows():
-                print(f"Entro en {aea}",end="\r")
-                row_dict = row.to_dict()
-                id_value = row_dict[self.identifier_field]
-                if id_value not in unique_objects:
-                    aea +=1
-                    unique_objects[id_value] = self.model(**row_dict)
-                else:
-                    print("algo paso con", id_value)'''
-                    
-            for aea in range(self.data.shape[0]):
-                print(f"Entro en {aea}",end="\r")
-                row = self.data.iloc[0]
+            for _, row in self.data.iterrows():
                 row_dict = row.to_dict()
                 id_value = row_dict[self.identifier_field]
                 if id_value not in unique_objects:
@@ -359,12 +348,7 @@ class ServiceDatabase:
                     unique_objects[id_value] = self.model(**row_dict)
                 else:
                     print("algo paso con", id_value)
-                print("Hora de borarr")
-                self.data.reset_index(drop=True, inplace=True)
-                print("Data reseteada y volver a borrar")
-                self.data.drop(index=0, inplace=True)
-
-
+                    
             print("Seteando los objects")
             self.objects = list(unique_objects.values())
             self.added_objects_count = len(self.objects)
