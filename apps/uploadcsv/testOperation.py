@@ -328,11 +328,15 @@ class ServiceDatabase:
         print("Creando objetos de la data")
         
         try:
+            
+            print("Buscando los ids totales")
             existing_ids = self.model.objects.values_list(
                 self.identifier_field, flat=True)
             self.data = self.data[~self.data[self.identifier_field].isin(
                 existing_ids)]
 
+            
+            print("Buscando ids Unicos")
             unique_objects = {}
             for _, row in self.data.iterrows():
                 row_dict = row.to_dict()
@@ -342,9 +346,9 @@ class ServiceDatabase:
                 else:
                     print("algo paso con", id_value)
 
+            print("Seteando los objects")
             self.objects = list(unique_objects.values())
-            objects = list(unique_objects.values())
-            self.added_objects_count = len(objects)
+            self.added_objects_count = len(self.objects)
 
         except Exception as e:
             raise CustomError(
@@ -355,7 +359,9 @@ class ServiceDatabase:
 
     def saveData(self, ignore_conflicts=False, batch_size = 1000):
         
-        print(len(self.objects))
+        print("Chales")
+        
+        print(self.added_objects_count)
         
         ram_consumida = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
         print("Memoria RAM consumida: {:.2f} GB".format(ram_consumida))
