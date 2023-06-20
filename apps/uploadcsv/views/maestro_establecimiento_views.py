@@ -36,7 +36,10 @@ class MAESTRO_HIS_ESTABLECIMIENTO_CSV_View(APIView, FileValidationMixin):
             
             # procesar y verificar
             dataframe.validate_file_type()
-            dataframe.read_csv_file(delimiter=delimiter,encoding=encode) 
+            dataframe.read_csv_file(delimiter=delimiter,encoding=encode)
+            
+            dataframe.data = dataframe.data[:1000]
+            
             dataframe.clean_data()
             dataframe.replace_none_strange_values()
             
@@ -44,26 +47,12 @@ class MAESTRO_HIS_ESTABLECIMIENTO_CSV_View(APIView, FileValidationMixin):
             objectDatrame = ObjectOperations(dataframe.data)    
             objectDatrame.get_field_names_from_instance(instance)
             objectDatrame.validate_columns(objectDatrame.field_names)
-            
-            # Calcula el número de partes en las que se dividirá el DataFrame
-            num_partes = dataframe.data.shape[0] // 1000 + 1
-
-            # Divide el DataFrame en partes de 1000 datos
-
-            dataframe.splitData = np.array_split(dataframe.data, num_partes)
-            
-            dataframe.data = None
-            
-            for dfdata in dataframe.splitData:
-                
-                dataframe.data = dfdata
-                dataframe.data.reset_index(drop=False, inplace=False)
                 
                 # Creacion de objetos con abase de datos 
-                database = ServiceDatabase(objectDatrame.data,identifier_field,model)
+            database = ServiceDatabase(objectDatrame.data,identifier_field,model)
             
-                database.create_objects_from_data()
-                database.saveData(ignore_conflicts=True)
+            database.create_objects_from_data()
+            database.saveData(ignore_conflicts=True)
             
             is_data_added =  (database.data_count_save - database.count_data_before ) > 0            
             
