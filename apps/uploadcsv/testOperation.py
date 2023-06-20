@@ -338,7 +338,6 @@ class ServiceDatabase:
             
             print("Buscando ids Unicos")
             unique_objects = {}
-            aea = 0
             print("Chales si paso :v")
             '''for _, row in self.data.iterrows():
                 print(f"Entro en {aea}",end="\r")
@@ -350,7 +349,7 @@ class ServiceDatabase:
                 else:
                     print("algo paso con", id_value)'''
                     
-            while(self.data.shape[0]>0):
+            for aea in range(self.data.shape[0]):
                 print(f"Entro en {aea}",end="\r")
                 row = self.data.iloc[0]
                 row_dict = row.to_dict()
@@ -360,8 +359,9 @@ class ServiceDatabase:
                     unique_objects[id_value] = self.model(**row_dict)
                 else:
                     print("algo paso con", id_value)
-                
+                print("Hora de borarr")
                 self.data.reset_index(drop=True, inplace=True)
+                print("Data reseteada y volver a borrar")
                 self.data.drop(index=0, inplace=True)
 
 
