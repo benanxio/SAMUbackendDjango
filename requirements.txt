@@ -54,3 +54,4 @@ django-background-tasks
 django-es==0.0.5
 django-rosetta==0.9.6
 xlrd==2.0.1
+psutil==5.9.5

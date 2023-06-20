@@ -49,7 +49,7 @@ class MAESTRO_HIS_ESTABLECIMIENTO_CSV_View(APIView, FileValidationMixin):
             database = ServiceDatabase(objectDatrame.data,identifier_field,model)
            
             database.create_objects_from_data()
-            database.saveData(ignore_conflicts=True,batch_size=1000)
+            database.saveData(ignore_conflicts=True)
             is_data_added =  (database.data_count_save - database.count_data_before ) > 0            
             
             end_time = time.time()  

@@ -3,6 +3,7 @@ import pandas as pd
 from apps.uploadcsv.custom_errors import CustomError, ErrorType
 from django.db import models
 from django.db import transaction
+import psutil
 
 class DataValidator:
     def __init__(self, filed):
@@ -29,8 +30,21 @@ class DataValidator:
             )
 
     def read_csv_file(self, delimiter=";", encoding='utf-8', use_cols=None, drop_cols=[]):
+
+        # Obtener la cantidad total de memoria RAM en el sistema
+        ram_total = psutil.virtual_memory().total / (1024 * 1024 * 1024)
+        # Obtener la memoria RAM actual del sistema en GB
+        ram_actual = psutil.virtual_memory().available / (1024 * 1024 * 1024)
+        
+        print("Memoria RAM total: {:.2f} GB".format(ram_total))
+        print("Memoria RAM antes de leer: {:.2f} GB".format(ram_actual))
+        
         self.data = pd.read_csv(self.file, delimiter=delimiter,
                                 encoding=encoding, na_values=None, usecols=use_cols)
+        
+        ram_actual = psutil.virtual_memory().available / (1024 * 1024 * 1024)
+        print("Memoria RAM despues de leer: {:.2f} GB".format(ram_actual))
+        
         self.data = self.data.drop(drop_cols, axis=1)
 
         self.count_data_orignal_csv = self.data.shape[0]
@@ -326,14 +340,21 @@ class ServiceDatabase:
                 details={'error_details': str(e)}
             )
 
-    def saveData(self, ignore_conflicts=False, batch_size = 5000):
+    def saveData(self, ignore_conflicts=False, batch_size = 10000):
         
         print(len(self.objects))
         
+        ram_consumida = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
+        print("Memoria RAM consumida: {:.2f} GB".format(ram_consumida))
+        
         with transaction.atomic():
             for i in range(0, len(self.objects), batch_size):
-                batch_data = self.objects[i:i+batch_size]
-                self.model.objects.bulk_create(batch_data, ignore_conflicts=ignore_conflicts)
-                print(len(batch_data))
+                try:
+                    batch_data = self.objects[i:i+batch_size]
+                    self.model.objects.bulk_create(batch_data, ignore_conflicts=ignore_conflicts)
+                    print(len(batch_data))
+                
+                except:
+                    print("awa")
                 
         self.data_count_save = self.model.objects.all().count()
