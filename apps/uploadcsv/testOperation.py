@@ -361,7 +361,9 @@ class ServiceDatabase:
                 else:
                     print("algo paso con", id_value)
                 
+                self.data.reset_index(drop=True, inplace=True)
                 self.data.drop(index=0, inplace=True)
+
 
             print("Seteando los objects")
             self.objects = list(unique_objects.values())
