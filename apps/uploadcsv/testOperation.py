@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from apps.uploadcsv.custom_errors import CustomError, ErrorType
 from django.db import models
-
+from django.db import transaction
 
 class DataValidator:
     def __init__(self, filed):
@@ -90,9 +90,25 @@ class DataExcelCNVValidator(DataValidator):
                 error_type=ErrorType.FILE_TYPE_ERROR,
                 message='El archivo debe ser de tipo XLS.'
             )
+    def decimal_converter(self,value, decimal= ','):
+        
+        replace = ',' if decimal == '.' else '.'
+        try:
+            return float(value.replace(decimal, replace))
+        except ValueError:
+            return value
+    
+    def read_excel_file(self, skiprows=[0,1,2],skipfooter=1,decimal = ',',
+                        columns_to_convert = ['CNV', 'Cod. EESS', 'Edad', 'Gest(Sem)', 'Documento', 'Teléfono', 'Cod. EESS Prenatal', 'Peso(g)', 'Talla(cm)', 'Apgar', 'Perímetro cefálico', 'Perímetro torácico', 'N° Colegio', 'Unnamed: 33', 'Unnamed: 35']):
+        
+        # Agrega los nombres de las columnas que deseas convertir
+        converters_dict = {}
+        
+        if len(columns_to_convert) > 0:
+            converters_dict = {col: lambda x, dec = decimal: self.decimal_converter(value=x, decimal=dec) for col in columns_to_convert}
             
-    def read_excel_file(self, skiprows=[0,1,2],skipfooter=1, decimal=','):
-        self.data = pd.read_excel(self.file,skiprows=skiprows,skipfooter=skipfooter, decimal=decimal)
+        
+        self.data = pd.read_excel(self.file,skiprows=skiprows,skipfooter=skipfooter, converters = converters_dict)
         self.count_data_orignal_csv = self.data.shape[0]
         
     def divide_type_birth(self):
@@ -132,9 +148,13 @@ class DataExcelCNVValidator(DataValidator):
         self.data.columns = self.data.columns.str.replace("[°º. )]","",regex=True).str.replace('(','_')
         self.data = self.data.rename(columns=rename_columns)
         
+        # Dividir la data en dos clases
         self.divide_type_birth()
-        
+        #Eliminar la columna N de numeracion del dataframe
         self.data = self.data.drop('N',axis=1)
+        
+        # Los decimal es y otros tipos estan como objetos, intetamos inferir que tipo de datos deverian ser
+        self.data = self.data.infer_objects()
         
         ## Logica HEREDADA
         
@@ -143,6 +163,7 @@ class DataExcelCNVValidator(DataValidator):
         
         # Convertir columnas numéricas a tipo float
         num_cols = self.data.select_dtypes(include=[np.number]).columns.tolist()
+        
         self.data[num_cols] = self.data[num_cols].astype(float)
         
         
@@ -305,8 +326,14 @@ class ServiceDatabase:
                 details={'error_details': str(e)}
             )
 
-    def saveData(self, ignore_conflicts=False):
-
-        self.model.objects.bulk_create(
-            self.objects, ignore_conflicts=ignore_conflicts)
+    def saveData(self, ignore_conflicts=False, batch_size = 5000):
+        
+        print(len(self.objects))
+        
+        with transaction.atomic():
+            for i in range(0, len(self.objects), batch_size):
+                batch_data = self.objects[i:i+batch_size]
+                self.model.objects.bulk_create(batch_data, ignore_conflicts=ignore_conflicts)
+                print(len(batch_data))
+                
         self.data_count_save = self.model.objects.all().count()
