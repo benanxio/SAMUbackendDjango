@@ -102,7 +102,8 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'statics')],
+        # 'DIRS': [os.path.join(BASE_DIR, 'statics')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -171,6 +172,7 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
+
     'DOMAIN': 'https://samubackend.onrender.com',
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
@@ -223,6 +225,9 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 # Others
 
 SITE_DOMAIN = os.environ.get("SITE_DOMAIN")
+DOMAIN = os.environ.get("SITE_DOMAIN")
+SITE_NAME = ('SAMU ILO')
+
 SITE_ID = 1
 AUTH_USER_MODEL = "user.UserAccount"
 
