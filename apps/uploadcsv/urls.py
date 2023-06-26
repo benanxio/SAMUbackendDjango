@@ -37,12 +37,12 @@ from apps.uploadcsv.views.maestro_ups_views import MAESTRO_HIS_UPS_CSV_View, MAE
 from apps.uploadcsv.views.verify_data_models_views import VerificarDatosAPIView
 from django.urls import path
 
-#---------------- Data CNV ------------------}
+# ---------------- Data CNV ------------------}
 
 from apps.uploadcsv.views.data_cnv_views import (
-     DATA_CNV_CSV_View,
-     DATA_CNV_Delete_View,
-     DATA_CNV_List_View
+    DATA_CNV_CSV_View,
+    DATA_CNV_Delete_View,
+    DATA_CNV_List_View
 )
 
 urls_maestro_actividad = [
@@ -58,7 +58,7 @@ urls_maestro_actividad = [
 urls_centropoblado = [
 
 
-     path("upload-csv-maestro_his_centro_poblado", MAESTRO_HIS_CENTRO_POBLADO_CSV_View.as_view(),
+    path("upload-csv-maestro_his_centro_poblado", MAESTRO_HIS_CENTRO_POBLADO_CSV_View.as_view(),
          name="upload-csv-maestro_his_centro_poblado"),
     path("delete-all-maestro_his_centro_poblado", MAESTRO_HIS_CENTRO_POBLADO_Delete_View.as_view(),
          name="delete-all-maestro_his_centro_poblado"),
@@ -228,15 +228,18 @@ urls_maestro_nominal_test = [
 # -------- DATA_CNV -----------
 
 urls_data_cnv = [
-     path("upload-csv-data_cnv", DATA_CNV_CSV_View.as_view(), name="upload-csv-data_cnv"),
-     path("delete-all-data_cnv", DATA_CNV_Delete_View.as_view(), name="delete-all-data_cnv"),
-     path("get-all-data_cnv",DATA_CNV_List_View.as_view(), name="get-all-data_cnv")
+    path("upload-csv-data_cnv", DATA_CNV_CSV_View.as_view(),
+         name="upload-csv-data_cnv"),
+    path("delete-all-data_cnv", DATA_CNV_Delete_View.as_view(),
+         name="delete-all-data_cnv"),
+    path("get-all-data_cnv", DATA_CNV_List_View.as_view(), name="get-all-data_cnv")
 ]
 
 
 urls_extra = [
     path("verify-data-models", VerificarDatosAPIView.as_view(),
-         name="verify-data-models")
+         name="verify-data-models"),
+
 ]
 
 

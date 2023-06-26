@@ -4,6 +4,7 @@ from apps.uploadcsv.custom_errors import CustomError, ErrorType
 from django.db import models
 from django.db import transaction
 
+
 class DataValidator:
     def __init__(self, filed):
         self.data = None
@@ -79,10 +80,11 @@ class DataValidator:
         self.data = self.data[:num]
         self.count_part_data = len(self.data)
 
+
 class DataExcelCNVValidator(DataValidator):
     def __init__(self, filed):
-         super().__init__(filed)
-    
+        super().__init__(filed)
+
     def validate_file_type(self):
         if not self.file.name.lower().endswith('.xls'):
 
@@ -90,105 +92,116 @@ class DataExcelCNVValidator(DataValidator):
                 error_type=ErrorType.FILE_TYPE_ERROR,
                 message='El archivo debe ser de tipo XLS.'
             )
-    def decimal_converter(self,value, decimal= ','):
-        
+
+    def decimal_converter(self, value, decimal=','):
+
         replace = ',' if decimal == '.' else '.'
         try:
             return float(value.replace(decimal, replace))
         except ValueError:
             return value
-    
-    def read_excel_file(self, skiprows=[0,1,2],skipfooter=1,decimal = ',',
-                        columns_to_convert = ['CNV', 'Cod. EESS', 'Edad', 'Gest(Sem)', 'Documento', 'Teléfono', 'Cod. EESS Prenatal', 'Peso(g)', 'Talla(cm)', 'Apgar', 'Perímetro cefálico', 'Perímetro torácico', 'N° Colegio', 'Unnamed: 33', 'Unnamed: 35']):
-        
+
+    def read_excel_file(self, skiprows=[0, 1, 2], skipfooter=1, decimal=',',
+                        columns_to_convert=['CNV', 'Cod. EESS', 'Edad', 'Gest(Sem)', 'Documento', 'Teléfono', 'Cod. EESS Prenatal', 'Peso(g)', 'Talla(cm)', 'Apgar', 'Perímetro cefálico', 'Perímetro torácico', 'N° Colegio', 'Unnamed: 33', 'Unnamed: 35']):
+
         # Agrega los nombres de las columnas que deseas convertir
         converters_dict = {}
-        
+
         if len(columns_to_convert) > 0:
-            converters_dict = {col: lambda x, dec = decimal: self.decimal_converter(value=x, decimal=dec) for col in columns_to_convert}
-            
-        
-        self.data = pd.read_excel(self.file,skiprows=skiprows,skipfooter=skipfooter, converters = converters_dict)
+            converters_dict = {col: lambda x, dec = decimal: self.decimal_converter(
+                value=x, decimal=dec) for col in columns_to_convert}
+
+        self.data = pd.read_excel(
+            self.file, skiprows=skiprows, skipfooter=skipfooter, converters=converters_dict)
         self.count_data_orignal_csv = self.data.shape[0]
-        
+
     def divide_type_birth(self):
-    
-        #Separamos la data en dos clases (dataframes)
+
+        # Separamos la data en dos clases (dataframes)
         # - Dataframe de Parto Normal (1)
         # - Dataframe de Parto por Cesarea (2)
-        
+
         # En caso que solo haya una clase se identifica que tipo es
 
-        #Se crea una nueva columna 'tipoParto' en ambos dataframes con los identificadores
-        
+        # Se crea una nueva columna 'tipoParto' en ambos dataframes con los identificadores
+
         posiciones = self.data[self.data['N'] == 1].index
-        
-        if(len(posiciones) > 1):
+
+        if (len(posiciones) > 1):
             minP, maxP = posiciones
 
-            dfPartoNormal = self.data.iloc[minP:maxP-1].assign(tipoPartoId=1,tipoParto='Normal')
-            dfCesarea = self.data.iloc[maxP:].assign(tipoPartoId=2, tipoParto='Cesarea')
-            
+            dfPartoNormal = self.data.iloc[minP:maxP -
+                                           1].assign(tipoPartoId=1, tipoParto='Normal')
+            dfCesarea = self.data.iloc[maxP:].assign(
+                tipoPartoId=2, tipoParto='Cesarea')
+
             self.data = pd.concat([dfPartoNormal, dfCesarea])
-            
+
         else:
-            
+
             dfpartoGen = self.data[posiciones[0]:]
             strCodicion = self.data.iloc[:posiciones[0], 0][0]
-            
-            tipoPartoId, tipoParto = [2,'Cesarea'] if 'cesarea' in strCodicion.lower() else [1,'Normal']
-            
-            self.data = dfpartoGen.assign(tipoPartoId=tipoPartoId, tipoParto=tipoParto)
-        
- 
-    def clean_data(self, columns_to_string=[], columns_to_int=[], columns_to_float=[],rename_columns={}):
-        
-        #Eliminamos las columnas sin nombre, los caracteres no alfabeticos y no numericos
-        self.data = self.data.loc[:, ~self.data.columns.str.contains('^Unnamed')]
-        self.data.columns = self.data.columns.str.replace("[°º. )]","",regex=True).str.replace('(','_')
+
+            tipoPartoId, tipoParto = [2, 'Cesarea'] if 'cesarea' in strCodicion.lower() else [
+                1, 'Normal']
+
+            self.data = dfpartoGen.assign(
+                tipoPartoId=tipoPartoId, tipoParto=tipoParto)
+
+    def clean_data(self, columns_to_string=[], columns_to_int=[], columns_to_float=[], rename_columns={}):
+
+        # Eliminamos las columnas sin nombre, los caracteres no alfabeticos y no numericos
+        self.data = self.data.loc[:, ~
+                                  self.data.columns.str.contains('^Unnamed')]
+        self.data.columns = self.data.columns.str.replace(
+            "[°º. )]", "", regex=True).str.replace('(', '_')
         self.data = self.data.rename(columns=rename_columns)
-        
+
         # Dividir la data en dos clases
         self.divide_type_birth()
-        #Eliminar la columna N de numeracion del dataframe
-        self.data = self.data.drop('N',axis=1)
-        
+        # Eliminar la columna N de numeracion del dataframe
+        self.data = self.data.drop('N', axis=1)
+
         # Los decimal es y otros tipos estan como objetos, intetamos inferir que tipo de datos deverian ser
         self.data = self.data.infer_objects()
-        
-        ## Logica HEREDADA
-        
+
+        # Logica HEREDADA
+
         # Reemplazar valores faltantes (NaN) con None
         self.data = self.data.where(pd.notnull(self.data), None)
-        
+
         # Convertir columnas numéricas a tipo float
-        num_cols = self.data.select_dtypes(include=[np.number]).columns.tolist()
-        
+        num_cols = self.data.select_dtypes(
+            include=[np.number]).columns.tolist()
+
         self.data[num_cols] = self.data[num_cols].astype(float)
-        
-        
+
         # Convertir valores numéricos a None cuando corresponda
-        self.data[num_cols] = self.data[num_cols].applymap(lambda x: None if pd.isna(x) or pd.isnull(x) else int(x))
-        
-        #opcional convertir columans a int o string o float 
-        
+        self.data[num_cols] = self.data[num_cols].applymap(
+            lambda x: None if pd.isna(x) or pd.isnull(x) else int(x))
+
+        # opcional convertir columans a int o string o float
+
         # Convertir columnas de fecha a tipo datetime y reemplazar NaT con None
-        date_cols = self.data.select_dtypes(include='datetime').columns.tolist()
-        
+        date_cols = self.data.select_dtypes(
+            include='datetime').columns.tolist()
+
         for col in date_cols:
-            self.data[col] = pd.to_datetime(self.data[col], errors='coerce').dt.date
-            self.data[col] = self.data[col].apply(lambda x: None if pd.isna(x) else x)
-            
+            self.data[col] = pd.to_datetime(
+                self.data[col], errors='coerce').dt.date
+            self.data[col] = self.data[col].apply(
+                lambda x: None if pd.isna(x) else x)
+
         self.data = self.data.fillna(value=-1)
-        #Luego convertir de -1 a None
+        # Luego convertir de -1 a None
         self.data.replace(to_replace=-1, value=None, inplace=True)
-        self.count_data_processing=len(self.data)
-        
+        self.count_data_processing = len(self.data)
+
     def replace_none_strange_values(self, values_=[]):
-         return super().replace_none_strange_values(values_)
-    
+        return super().replace_none_strange_values(values_)
+
     def split_data(self, num):
-         return super().split_data(num)
+        return super().split_data(num)
 
 
 class ObjectOperations:
@@ -326,14 +339,15 @@ class ServiceDatabase:
                 details={'error_details': str(e)}
             )
 
-    def saveData(self, ignore_conflicts=False, batch_size = 5000):
-        
+    def saveData(self, ignore_conflicts=False, batch_size=2000):
+
         print(len(self.objects))
-        
+
         with transaction.atomic():
             for i in range(0, len(self.objects), batch_size):
                 batch_data = self.objects[i:i+batch_size]
-                self.model.objects.bulk_create(batch_data, ignore_conflicts=ignore_conflicts)
+                self.model.objects.bulk_create(
+                    batch_data, ignore_conflicts=ignore_conflicts)
                 print(len(batch_data))
-                
+
         self.data_count_save = self.model.objects.all().count()

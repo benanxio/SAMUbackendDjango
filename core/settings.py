@@ -171,6 +171,7 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
+    'DOMAIN': 'https://samubackend.onrender.com',
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
     'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
@@ -190,7 +191,6 @@ DJOSER = {
         'current_user': 'apps.user.serializers.UserAcountCreateSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
     },
-
 
 
 }

@@ -9,6 +9,9 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        Settings.objects.create(user=user)
+        Profile.objects.create(user=user)
+
         return user
 
     def create_superuser(self, email, password, **extra_fields):
@@ -32,9 +35,9 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     desactivate_account = models.BooleanField(default=False)
 
     objects = UserManager()
-    
+
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['nickname']
+    REQUIRED_FIELDS = ['nickname', 'first_name', 'last_name']
     SET_USERNAME_RETYPE = True
     USERNAME_RESET_SHOW_EMAIL_NOT_FOUND = False
 
@@ -48,3 +51,22 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.nickname
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE)
+    location = models.CharField(max_length=100, blank=True)
+    birthdate = models.DateField(blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.nickname}"
+
+
+class Settings(models.Model):
+    user = models.OneToOneField(UserAccount, on_delete=models.CASCADE)
+    email_notifications = models.BooleanField(default=True)
+    theme_name = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Settings of {self.user.nickname}"
