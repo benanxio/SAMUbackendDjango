@@ -225,7 +225,7 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 # Others
 
 SITE_DOMAIN = os.environ.get("SITE_DOMAIN")
-DOMAIN = os.environ.get("SITE_DOMAIN")
+DOMAIN = os.environ.get("DOMAIN")
 SITE_NAME = ('SAMU ILO')
 
 SITE_ID = 1
