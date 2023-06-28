@@ -4,6 +4,7 @@ from apps.uploadcsv.custom_errors import CustomError, ErrorType
 from django.db import models
 from django.db import transaction
 import psutil
+import io
 
 
 class DataValidator:
@@ -33,19 +34,8 @@ class DataValidator:
 
     def read_csv_file(self, delimiter=";", encoding='utf-8', use_cols=None, drop_cols=[]):
 
-        # Obtener la cantidad total de memoria RAM en el sistema
-        ram_total = psutil.virtual_memory().total / (1024 * 1024 * 1024)
-        # Obtener la memoria RAM actual del sistema en GB
-        ram_actual = psutil.virtual_memory().available / (1024 * 1024 * 1024)
-        
-        print("Memoria RAM total: {:.3f} GB".format(ram_total))
-        print("Memoria RAM antes de leer: {:.3f} GB".format(ram_actual))
-        
-        self.data = pd.read_csv(self.file, delimiter=delimiter,
+        self.data = pd.read_csv(io.BytesIO(self.file.read()), delimiter=delimiter,
                                 encoding=encoding, na_values=None, usecols=use_cols)
-        
-        ram_actual = psutil.virtual_memory().available / (1024 * 1024 * 1024)
-        print("Memoria RAM despues de leer: {:.3f} GB".format(ram_actual))
         
         self.data = self.data.drop(drop_cols, axis=1)
 
@@ -53,8 +43,6 @@ class DataValidator:
 
     def clean_data(self, columns_to_string=[], columns_to_int=[], columns_to_float=[]):
 
-
-        #print("Limpieza de datos")
         # Reemplazar valores faltantes (NaN) con None
         self.data = self.data.where(pd.notnull(self.data), None)
 
@@ -86,7 +74,6 @@ class DataValidator:
 
     def replace_none_strange_values(self, values_=[]):
         
-        #print("Lmpiando datos nulos")
 
         null_strings = ["", "None", "NaT", "N/A", "<NA>.", "n/a", "null", "nan" "NULL", "-", "<NA>", "<nan>", "#N/A", "#N/A N/A", 'SIN DA',
                             'nullnu', "Id_Cita", "'None'",   "Anio",    "Mes",    "Dia",    "Fecha_Atencion",    "Lote",    "Num_Pag",    "Num_Reg",    "Id_Ups",    "Id_Establecimiento",    "Id_Paciente",    "Id_Personal",    "Id_Registrador",    "Id_Financiador",    "Id_Condicion_Establecimiento",    "Id_Condicion_Servicio",    "Edad_Reg",    "Tipo_Edad",    "Anio_Actual_Paciente",    "Mes_Actual_Paciente",    "Dia_Actual_Paciente",    "Id_Turno",    "Codigo_Item",    "Tipo_Diagnostico",    "Valor_Lab",    "Id_Correlativo",    "Id_Correlativo_Lab",    "Peso",    "Talla",    "Hemoglobina",    "Perimetro_Abdominal",    "Perimetro_Cefalico",    "Id_Otra_Condicion",    "Id_Centro_Poblado",    "Fecha_Ultima_Regla",    "Fecha_Solicitud_Hb",    "Fecha_Resultado_Hb",    "Fecha_Registro",    "Fecha_Modificacion",    "Id_Pais"] + values_
@@ -113,7 +100,7 @@ class DataExcelCNVValidator(DataValidator):
             )
 
     def decimal_converter(self, value, decimal=','):
-
+        value = value.strip()
         replace = ',' if decimal == '.' else '.'
         try:
             return float(value.replace(decimal, replace))
@@ -121,18 +108,17 @@ class DataExcelCNVValidator(DataValidator):
             return value
 
     def read_excel_file(self, skiprows=[0, 1, 2], skipfooter=1, decimal=',',
-                        columns_to_convert=['CNV', 'Cod. EESS', 'Edad', 'Gest(Sem)', 'Documento', 'Teléfono', 'Cod. EESS Prenatal', 'Peso(g)', 'Talla(cm)', 'Apgar', 'Perímetro cefálico', 'Perímetro torácico', 'N° Colegio', 'Unnamed: 33', 'Unnamed: 35']):
+                        columns_to_convert=['CNV', 'Cod. EESS', 'Edad', 'Gest(Sem)', 'Teléfono', 'Cod. EESS Prenatal', 'Peso(g)', 'Talla(cm)', 'Apgar', 'Perímetro cefálico', 'Perímetro torácico', 'N° Colegio', 'Unnamed: 33', 'Unnamed: 35']):
 
         # Agrega los nombres de las columnas que deseas convertir
         converters_dict = {}
 
         if len(columns_to_convert) > 0:
-            converters_dict = {col: lambda x, dec = decimal: self.decimal_converter(
-                value=x, decimal=dec) for col in columns_to_convert}
+            converters_dict = {col: lambda x, decimal = decimal: self.decimal_converter(
+                value=x, decimal=decimal) for col in columns_to_convert}
 
         self.data = pd.read_excel(
             self.file, skiprows=skiprows, skipfooter=skipfooter, converters=converters_dict)
-        self.count_data_orignal_csv = self.data.shape[0]
 
     def divide_type_birth(self):
 
@@ -180,9 +166,10 @@ class DataExcelCNVValidator(DataValidator):
         self.divide_type_birth()
         # Eliminar la columna N de numeracion del dataframe
         self.data = self.data.drop('N', axis=1)
-
-        # Los decimal es y otros tipos estan como objetos, intetamos inferir que tipo de datos deverian ser
-        self.data = self.data.infer_objects()
+        
+        #------------------- Data sin filas y columnas necesarias-------
+        
+        self.count_data_orignal_csv = self.data.shape[0]
 
         # Logica HEREDADA
 
@@ -200,6 +187,8 @@ class DataExcelCNVValidator(DataValidator):
             lambda x: None if pd.isna(x) or pd.isnull(x) else int(x))
 
         # opcional convertir columans a int o string o float
+        
+        
 
         # Convertir columnas de fecha a tipo datetime y reemplazar NaT con None
         date_cols = self.data.select_dtypes(
@@ -214,6 +203,12 @@ class DataExcelCNVValidator(DataValidator):
         self.data = self.data.fillna(value=-1)
         # Luego convertir de -1 a None
         self.data.replace(to_replace=-1, value=None, inplace=True)
+        
+        # Los decimal es y otros tipos estan como objetos, intetamos inferir que tipo de datos deverian ser
+        self.data = self.data.infer_objects()
+        
+        print(self.data.dtypes)
+        
         self.count_data_processing = len(self.data)
 
     def replace_none_strange_values(self, values_=[]):
@@ -225,13 +220,10 @@ class DataExcelCNVValidator(DataValidator):
 
 class ObjectOperations:
     def __init__(self, data):
-        print("Asignando data object operations")
         self.data = data
         self.field_names = []
 
     def validate_columns(self, expected_columns):
-        
-        #print("validando columnas")
 
         missing_columns = [
             column for column in expected_columns if column not in self.data.columns]
@@ -266,8 +258,6 @@ class ObjectOperations:
             )
 
     def get_field_names_from_instance(self,  instance: models.Model):
-        
-        #print("obteniendo los nombres de las instancias")
         
         fields = instance._meta.fields
         field_names = [field.name for field in fields]
@@ -339,20 +329,13 @@ class ServiceDatabase:
 
     def create_objects_from_data(self):
         
-        print("Creando objetos de la data")
-        
         try:
-            
-            print("Buscando los ids totales")
             existing_ids = self.model.objects.values_list(
                 self.identifier_field, flat=True)
             self.data = self.data[~self.data[self.identifier_field].isin(
                 existing_ids)]
 
-            
-            print("Buscando ids Unicos")
             unique_objects = {}
-            print("Chales si paso :v")
             for _, row in self.data.iterrows():
                 row_dict = row.to_dict()
                 id_value = row_dict[self.identifier_field]
@@ -361,7 +344,6 @@ class ServiceDatabase:
                 else:
                     print("algo paso con", id_value)
                     
-            print("Seteando los objects")
             self.objects = list(unique_objects.values())
             self.added_objects_count = len(self.objects)
 
@@ -372,15 +354,12 @@ class ServiceDatabase:
                 details={'error_details': str(e)}
             )
 
-    def saveData(self, ignore_conflicts=False, batch_size=2000):
-
-        print(len(self.objects))
+    def saveData(self, ignore_conflicts=False, batch_size=50000):
 
         with transaction.atomic():
             for i in range(0, len(self.objects), batch_size):
                 batch_data = self.objects[i:i+batch_size]
                 self.model.objects.bulk_create(
                     batch_data, ignore_conflicts=ignore_conflicts)
-                print(len(batch_data))
 
         self.data_count_save = self.model.objects.all().count()
