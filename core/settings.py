@@ -56,7 +56,6 @@ THIRD_PARTY_APPS = ["corsheaders",
                     'allauth',
                     'allauth.account',
                     "rest_framework.authtoken",
-                    "background_task",
                     'rosetta',
 
 
