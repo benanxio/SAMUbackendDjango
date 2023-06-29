@@ -1,5 +1,6 @@
 from django.db import connection
 
+
 def my_custom_sql():
     with connection.cursor() as cursor:
         cursor.callproc('public.sp_condicion_pacientes')

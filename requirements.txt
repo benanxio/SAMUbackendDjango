@@ -22,7 +22,7 @@ psycopg2-binary==2.9.5
 argon2-cffi==21.1.0 
 django-environ==0.4.5
 
-stripe==2.58.0
+#stripe==2.58.0
 braintree==4.13.1
 
 
@@ -40,18 +40,15 @@ requests==2.26.0
 django-anymail==8.6
 mailjet-rest==1.3.4
 
-#pandas==2.0.0
 pandas==1.3.5
-chardet==5.1.0
 
+#django-bulk-sync==3.3.0
 
-django-bulk-sync==3.3.0
+#celery==5.1.2
+#redis
+#django-redis
+#django-background-tasks
 
-celery==5.1.2
-redis
-django-redis
-
-django-background-tasks
 django-es==0.0.5
 django-rosetta==0.9.6
 xlrd==2.0.1

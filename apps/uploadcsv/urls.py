@@ -1,3 +1,4 @@
+from apps.uploadcsv.views.cnv_relation_to_paciente import CNV_RELATION_PACIENTEView
 from apps.uploadcsv.views.maestro_actividad_views import MAESTRO_HIS_ACTIVIDAD_HIS_CSV_View, \
     MAESTRO_HIS_ACTIVIDAD_HIS_Delete_View, MAESTRO_HIS_ACTIVIDAD_HIS_List_View
 from apps.uploadcsv.views.maestro_centropoblado_views import MAESTRO_HIS_CENTRO_POBLADO_CSV_View, \
@@ -239,6 +240,8 @@ urls_data_cnv = [
 urls_extra = [
     path("verify-data-models", VerificarDatosAPIView.as_view(),
          name="verify-data-models"),
+    path("cnv_relation_paciente", CNV_RELATION_PACIENTEView.as_view(),
+         name="cnv_relation_paciente")
 
 ]
 
