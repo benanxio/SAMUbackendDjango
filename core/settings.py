@@ -1,10 +1,8 @@
+import environ
 import logging
 import os
 from datetime import timedelta
 from pathlib import Path
-
-import environ
-
 env = environ.Env()
 environ.Env.read_env()
 ENVIRONMENT = env
@@ -63,7 +61,6 @@ THIRD_PARTY_APPS = ["corsheaders",
                     'allauth',
                     'allauth.account',
                     "rest_framework.authtoken",
-                    "background_task",
                     'rosetta',
 
 
@@ -235,19 +232,8 @@ SITE_NAME = ('SAMU ILO')
 
 SITE_ID = 1
 AUTH_USER_MODEL = "user.UserAccount"
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# redis
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://localhost:6379/0',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
 
 # Configuración de internacionalización
 LANGUAGE_CODE = 'es'

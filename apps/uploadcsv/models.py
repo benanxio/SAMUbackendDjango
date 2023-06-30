@@ -1,4 +1,4 @@
-            
+
 from django.conf import settings
 from django.db import models
 import codecs
@@ -30,7 +30,7 @@ class MAESTRO_HIS_UBIGEO_INEI_RENIEC(models.Model):
 
 
 class MAESTRO_HIS_ESTABLECIMIENTO(models.Model):
-    Id_Establecimiento = models.CharField(max_length=255,primary_key=True)
+    Id_Establecimiento = models.CharField(max_length=255, primary_key=True)
     Nombre_Establecimiento = models.CharField(
         max_length=255, null=True, blank=True)
     Ubigueo_Establecimiento = models.IntegerField(null=True, blank=True)
@@ -47,11 +47,11 @@ class MAESTRO_HIS_ESTABLECIMIENTO(models.Model):
     Departamento = models.CharField(max_length=255, null=True, blank=True)
     Provincia = models.CharField(max_length=255, null=True, blank=True)
     Distrito = models.CharField(max_length=255, null=True, blank=True)
-    Categoria_Establecimiento = models.CharField(max_length=255, null=True, blank=True)
-
+    Categoria_Establecimiento = models.CharField(
+        max_length=255, null=True, blank=True)
 
     class Meta:
-        
+
         db_table = 'MAESTRO_HIS_ESTABLECIMIENTO'
         verbose_name_plural = "MAESTRO_HIS_ESTABLECIMIENTO"
 
@@ -72,11 +72,11 @@ class MAESTRO_HIS_CIE_CPMS(models.Model):
 
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_CIE_CPMS"
-        db_table ="MAESTRO_HIS_CIE_CPMS"
+        db_table = "MAESTRO_HIS_CIE_CPMS"
 
 
 class MAESTRO_HIS_OTRA_CONDICION(models.Model):
-    Id_Otra_Condicion = models.CharField(max_length=255,primary_key=True)
+    Id_Otra_Condicion = models.CharField(max_length=255, primary_key=True)
     Descripcion_Otra_Condicion = models.CharField(
         max_length=255, null=True, blank=True)
 
@@ -84,8 +84,9 @@ class MAESTRO_HIS_OTRA_CONDICION(models.Model):
         verbose_name_plural = "MAESTRO_HIS_OTRA_CONDICION"
         db_table = 'MAESTRO_HIS_OTRA_CONDICION'
 
+
 class MAESTRO_HIS_ETNIA(models.Model):
-    Id_Etnia = models.CharField(max_length=255,primary_key=True)
+    Id_Etnia = models.CharField(max_length=255, primary_key=True)
     Descripcion_Etnia = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
@@ -105,16 +106,14 @@ class MAESTRO_HIS_COLEGIO(models.Model):
 
 
 class MAESTRO_HIS_TIPO_DOC(models.Model):
-    Id_Tipo_Documento = models.CharField( max_length=255,primary_key=True)
+    Id_Tipo_Documento = models.CharField(max_length=255, primary_key=True)
     Abrev_Tipo_Doc = models.CharField(max_length=50, null=True, blank=True)
     Descripcion_Tipo_Documento = models.CharField(
         max_length=100, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_TIPO_DOC"
         db_table = 'MAESTRO_HIS_TIPO_DOC'
-
-
- 
 
 
 class MAESTRO_HIS_PAIS(models.Model):
@@ -126,30 +125,23 @@ class MAESTRO_HIS_PAIS(models.Model):
         db_table = 'MAESTRO_HIS_PAIS'
 
 
-
-
-
 class MAESTRO_HIS_FINANCIADOR(models.Model):
-    Id_Financiador = models.CharField(max_length=255,primary_key=True)
+    Id_Financiador = models.CharField(max_length=255, primary_key=True)
     Descripcion_Financiador = models.CharField(
         max_length=255, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_FINANCIADOR"
         db_table = 'MAESTRO_HIS_FINANCIADOR'
 
 
-
-
-
 class MAESTRO_HIS_UPS(models.Model):
-    Id_Ups = models.CharField(max_length=255,primary_key=True)
+    Id_Ups = models.CharField(max_length=255, primary_key=True)
     Descripcion_Ups = models.CharField(max_length=255, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_UPS"
         db_table = 'MAESTRO_HIS_UPS'
-
-
-       
 
 
 class MAESTRO_HIS_ACTIVIDAD_HIS(models.Model):
@@ -157,21 +149,23 @@ class MAESTRO_HIS_ACTIVIDAD_HIS(models.Model):
     Descripcion_Actividad_His = models.CharField(
         max_length=255, null=True, blank=True)
     Fg_Estado = models.IntegerField()
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_ACTIVIDAD_HIS"
         db_table = 'MAESTRO_HIS_ACTIVIDAD_HIS'
 
 
-
 class MAESTRO_HIS_CENTRO_POBLADO(models.Model):
-    Id_Centro_Poblado = models.CharField(max_length=255,primary_key=True)
+    Id_Centro_Poblado = models.CharField(max_length=255, primary_key=True)
     Descripcion_Centro_Poblado = models.CharField(max_length=255)
-    Id_Codigo_Centro_Poblado = models.BigIntegerField(null=True,blank=True)
-    Id_Ubigueo_Centro_Poblado = models.BigIntegerField(null=True,blank=True)
-    Altitud_Centro_Poblado = models.IntegerField(null=True,blank=True)
+    Id_Codigo_Centro_Poblado = models.BigIntegerField(null=True, blank=True)
+    Id_Ubigueo_Centro_Poblado = models.BigIntegerField(null=True, blank=True)
+    Altitud_Centro_Poblado = models.IntegerField(null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_CENTRO_POBLADO"
         db_table = 'MAESTRO_HIS_CENTRO_POBLADO'
+
 
 class MAESTRO_HIS_CONDICION_CONTRATO(models.Model):
     Id_Condicion = models.BigIntegerField(primary_key=True)
@@ -189,72 +183,137 @@ class MAESTRO_HIS_PROFESION(models.Model):
     Descripcion_Profesion = models.CharField(
         max_length=255, null=True, blank=True)
     Id_Colegio = models.ForeignKey(
-        MAESTRO_HIS_COLEGIO, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_COLEGIO, on_delete=models.SET_NULL, null=True)
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_PROFESION"
         db_table = 'MAESTRO_HIS_PROFESION'
 
-class MAESTRO_HIS_REGISTRADOR(models.Model):
-    
-    Id_Registrador = models.CharField(max_length=255,primary_key=True)
-    Id_Tipo_Documento = models.ForeignKey(
-        MAESTRO_HIS_TIPO_DOC, on_delete=models.SET_NULL,null=True)
 
-    Numero_Documento = models.CharField(max_length=20,null=True,blank=True)
-    Apellido_Paterno_Registrador = models.CharField(max_length=50,null=True,blank=True)
-    Apellido_Materno_Registrador = models.CharField(max_length=50,null=True,blank=True)
-    Nombres_Registrador = models.CharField(max_length=50,null=True,blank=True)
-    Fecha_Nacimiento = models.CharField(max_length=255,null=True,blank=True)
+class MAESTRO_HIS_REGISTRADOR(models.Model):
+
+    Id_Registrador = models.CharField(max_length=255, primary_key=True)
+    Id_Tipo_Documento = models.ForeignKey(
+        MAESTRO_HIS_TIPO_DOC, on_delete=models.SET_NULL, null=True)
+
+    Numero_Documento = models.CharField(max_length=20, null=True, blank=True)
+    Apellido_Paterno_Registrador = models.CharField(
+        max_length=50, null=True, blank=True)
+    Apellido_Materno_Registrador = models.CharField(
+        max_length=50, null=True, blank=True)
+    Nombres_Registrador = models.CharField(
+        max_length=50, null=True, blank=True)
+    Fecha_Nacimiento = models.CharField(max_length=255, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_REGISTRADOR"
         db_table = 'MAESTRO_HIS_REGISTRADOR'
 
-#tablas con mas de 2 foreign keys
+
+class DATA_CNV(models.Model):
+    CNV = models.CharField(max_length=255, primary_key=True)
+    Estado = models.CharField(max_length=255, blank=True, null=True)
+    CodEESS = models.CharField(max_length=255, blank=True, null=True)
+    EESS = models.CharField(max_length=255, blank=True, null=True)
+    pApellidoMadre = models.CharField(max_length=255, blank=True, null=True)
+    sApellidoMadre = models.CharField(max_length=255, blank=True, null=True)
+    nombresMadre = models.CharField(max_length=255, blank=True, null=True)
+    Edad = models.IntegerField(blank=True, null=True)
+    FecNac = models.CharField(max_length=255, blank=True, null=True)
+    Gest_Sem = models.IntegerField(blank=True, null=True)
+    TipoDoc = models.CharField(max_length=255, blank=True, null=True)
+    Documento = models.CharField(max_length=255, blank=True, null=True)
+    Teléfono = models.CharField(max_length=255, blank=True, null=True)
+    CodEESSPrenatal = models.CharField(max_length=255, blank=True, null=True)
+    EESSPrenatal = models.CharField(max_length=255, blank=True, null=True)
+    Fecha = models.CharField(max_length=255, blank=True, null=True)
+    Hora = models.TimeField(blank=True, null=True)
+    Sexo = models.CharField(max_length=255, blank=True, null=True)
+    Peso_g = models.FloatField(blank=True, null=True)
+    Talla_cm = models.FloatField(blank=True, null=True)
+    Apgar = models.FloatField(blank=True, null=True)
+    Perímetrocefálico = models.FloatField(blank=True, null=True)
+    Perímetrotorácico = models.FloatField(blank=True, null=True)
+    Malfcongénita = models.CharField(max_length=255, blank=True, null=True)
+    TiempoLigCord = models.CharField(max_length=255, blank=True, null=True)
+    Lactanciaprecoz = models.CharField(max_length=255, blank=True, null=True)
+    pApellidoProfesional = models.CharField(
+        max_length=255, blank=True, null=True)
+    sApellidoProfesional = models.CharField(
+        max_length=255, blank=True, null=True)
+    nombresProfesional = models.CharField(
+        max_length=255, blank=True, null=True)
+    Profesión = models.CharField(max_length=255, blank=True, null=True)
+    NColegio = models.CharField(max_length=255, blank=True, null=True)
+    FechaRegistro = models.CharField(max_length=255, blank=True, null=True)
+    pApellidoResgistrador = models.CharField(
+        max_length=255, blank=True, null=True)
+    sApellidoRegistrador = models.CharField(
+        max_length=255, blank=True, null=True)
+    nombresRegistrador = models.CharField(
+        max_length=255, blank=True, null=True)
+    tipoPartoId = models.IntegerField(blank=True, null=True)
+    tipoParto = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "DATA_CNV"
+        db_table = 'DATA_CNV'
+
+
+# tablas con mas de 2 foreign keys
+
+
 class MAESTRO_HIS_PERSONAL(models.Model):
-    
-    Id_Personal = models.CharField(max_length=255,primary_key=True)
+
+    Id_Personal = models.CharField(max_length=255, primary_key=True)
 
     Id_Tipo_Documento = models.ForeignKey(
-        MAESTRO_HIS_TIPO_DOC, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_TIPO_DOC, on_delete=models.SET_NULL, null=True)
 
-    Numero_Documento = models.CharField(max_length=50,null=True, blank=True)
-    Apellido_Paterno_Personal = models.CharField(max_length=50, null=True, blank=True)
+    Numero_Documento = models.CharField(max_length=50, null=True, blank=True)
+    Apellido_Paterno_Personal = models.CharField(
+        max_length=50, null=True, blank=True)
     Apellido_Materno_Personal = models.CharField(
         max_length=50, null=True, blank=True)
-    Nombres_Personal = models.CharField(max_length=50,null=True, blank=True)
-    Fecha_Nacimiento = models.CharField(max_length=255,null=True, blank=True)
+    Nombres_Personal = models.CharField(max_length=50, null=True, blank=True)
+    Fecha_Nacimiento = models.CharField(max_length=255, null=True, blank=True)
 
     Id_Condicion = models.ForeignKey(
-        MAESTRO_HIS_CONDICION_CONTRATO,on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_CONDICION_CONTRATO, on_delete=models.SET_NULL, null=True)
     Id_Profesion = models.ForeignKey(
-        MAESTRO_HIS_PROFESION, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_PROFESION, on_delete=models.SET_NULL, null=True)
     Id_Colegio = models.ForeignKey(
-        MAESTRO_HIS_COLEGIO, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_COLEGIO, on_delete=models.SET_NULL, null=True)
     Id_Establecimiento = models.ForeignKey(
-        MAESTRO_HIS_ESTABLECIMIENTO, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_ESTABLECIMIENTO, on_delete=models.SET_NULL, null=True)
 
-    Numero_Colegiatura = models.CharField(max_length=255, null=True, blank=True)
-    Fecha_Alta = models.CharField(max_length=255,null=True, blank=True)
-    Fecha_Baja = models.CharField(max_length=255,null=True, blank=True)
+    Numero_Colegiatura = models.CharField(
+        max_length=255, null=True, blank=True)
+    Fecha_Alta = models.CharField(max_length=255, null=True, blank=True)
+    Fecha_Baja = models.CharField(max_length=255, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_PERSONAL"
         db_table = 'MAESTRO_HIS_PERSONAL'
 
+
 class MAESTRO_HIS_PACIENTE(models.Model):
-    
-    Id_Paciente = models.CharField(primary_key=True,unique=True,max_length=255)
-   
+
+    Id_Paciente = models.CharField(
+        primary_key=True, unique=True, max_length=255)
+
     Id_Tipo_Documento = models.ForeignKey(
-        MAESTRO_HIS_TIPO_DOC, on_delete=models.SET_NULL,null=True)
-    
-    Numero_Documento = models.CharField(max_length=255,null=True,blank=True)
+        MAESTRO_HIS_TIPO_DOC, on_delete=models.SET_NULL, null=True)
+
+    Numero_Documento = models.CharField(max_length=255, null=True, blank=True)
     Apellido_Paterno_Paciente = models.CharField(max_length=255, null=True)
     Apellido_Materno_Paciente = models.CharField(max_length=255, null=True)
     Nombres_Paciente = models.CharField(max_length=255, null=True)
     Fecha_Nacimiento = models.CharField(max_length=255, null=True)
-    Genero = models.CharField(max_length=255,null=True,blank=True)
+    Genero = models.CharField(max_length=255, null=True, blank=True)
 
-    Id_Etnia = models.ForeignKey(MAESTRO_HIS_ETNIA, on_delete=models.SET_NULL,null=True)
+    Id_Etnia = models.ForeignKey(
+        MAESTRO_HIS_ETNIA, on_delete=models.SET_NULL, null=True)
 
     Historia_Clinica = models.CharField(max_length=255, null=True)
     Ficha_Familiar = models.CharField(max_length=255, null=True)
@@ -265,22 +324,26 @@ class MAESTRO_HIS_PACIENTE(models.Model):
     Domicilio_Declarado = models.IntegerField(null=True)
     Referencia_Domicilio = models.IntegerField(null=True)
 
-    Id_Pais = models.ForeignKey(MAESTRO_HIS_PAIS,on_delete=models.SET_NULL,null=True)
+    Id_Pais = models.ForeignKey(
+        MAESTRO_HIS_PAIS, on_delete=models.SET_NULL, null=True)
     Id_Establecimiento = models.ForeignKey(
-        MAESTRO_HIS_ESTABLECIMIENTO, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_ESTABLECIMIENTO, on_delete=models.SET_NULL, null=True)
 
     Fecha_Alta = models.CharField(max_length=255, null=True)
     Fecha_Modificacion = models.CharField(max_length=255, null=True)
+    CNV = models.ForeignKey(
+        DATA_CNV, on_delete=models.SET_NULL, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_PACIENTE"
-        db_table = 'MAESTRO_HIS_PACIENTE'   
+        db_table = 'MAESTRO_HIS_PACIENTE'
 
 
 # ________________________________ Principal Nominal ______________________________________________________
 
 class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO(models.Model):
     Id = models.IntegerField(primary_key=True)
-    Id_Cita = models.CharField(max_length=255,null=True)
+    Id_Cita = models.CharField(max_length=255, null=True)
     Anio = models.IntegerField(null=True, blank=True)
     Mes = models.IntegerField(null=True, blank=True)
     Dia = models.IntegerField(null=True, blank=True)
@@ -290,22 +353,22 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO(models.Model):
     Num_Reg = models.IntegerField(null=True, blank=True)
 
     Id_Ups = models.ForeignKey(
-        MAESTRO_HIS_UPS,on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_UPS, on_delete=models.SET_NULL, null=True)
 
     Id_Establecimiento = models.ForeignKey(
-        MAESTRO_HIS_ESTABLECIMIENTO, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_ESTABLECIMIENTO, on_delete=models.SET_NULL, null=True)
 
     Id_Paciente = models.ForeignKey(
-        MAESTRO_HIS_PACIENTE,  on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_PACIENTE,  on_delete=models.SET_NULL, null=True)
     Id_Personal = models.ForeignKey(
-        MAESTRO_HIS_PERSONAL, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_PERSONAL, on_delete=models.SET_NULL, null=True)
 
     Id_Registrador = models.ForeignKey(
-        MAESTRO_HIS_REGISTRADOR,  on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_REGISTRADOR,  on_delete=models.SET_NULL, null=True)
 
     Id_Financiador = models.ForeignKey(
         MAESTRO_HIS_FINANCIADOR,
-         on_delete=models.SET_NULL,null=True
+        on_delete=models.SET_NULL, null=True
 
     )
 
@@ -324,12 +387,9 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO(models.Model):
     Id_Turno = models.CharField(max_length=255,  null=True, blank=True)
 
     Codigo_Item = models.ForeignKey(
-        MAESTRO_HIS_CIE_CPMS,  on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_CIE_CPMS,  on_delete=models.SET_NULL, null=True)
 
     Tipo_Diagnostico = models.CharField(max_length=255, null=True, blank=True)
-    
-
-    
 
     Peso = models.FloatField(null=True, blank=True)
     Talla = models.FloatField(null=True, blank=True)
@@ -338,24 +398,24 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO(models.Model):
     Perimetro_Cefalico = models.FloatField(null=True, blank=True)
 
     Id_Otra_Condicion = models.ForeignKey(
-        MAESTRO_HIS_OTRA_CONDICION, on_delete=models.SET_NULL,null=True)
+        MAESTRO_HIS_OTRA_CONDICION, on_delete=models.SET_NULL, null=True)
 
     Id_Centro_Poblado = models.ForeignKey(
         MAESTRO_HIS_CENTRO_POBLADO,
-         on_delete=models.SET_NULL,null=True
+        on_delete=models.SET_NULL, null=True
     )
     Id_Correlativo = models.IntegerField(null=True, blank=True)
     Id_Correlativo_Lab = models.IntegerField(null=True, blank=True)
-    Valor_Lab = models.CharField(max_length=255,null=True,blank=True)
-    Fecha_Ultima_Regla = models.CharField(max_length=255,null=True)
-    Fecha_Solicitud_Hb = models.CharField(max_length=255,null=True)
-    Fecha_Resultado_Hb = models.CharField(max_length=255,null=True)
-    Fecha_Registro = models.CharField(max_length=255,null=True)
-    Fecha_Modificacion = models.CharField(max_length=255,null=True)
+    Valor_Lab = models.CharField(max_length=255, null=True, blank=True)
+    Fecha_Ultima_Regla = models.CharField(max_length=255, null=True)
+    Fecha_Solicitud_Hb = models.CharField(max_length=255, null=True)
+    Fecha_Resultado_Hb = models.CharField(max_length=255, null=True)
+    Fecha_Registro = models.CharField(max_length=255, null=True)
+    Fecha_Modificacion = models.CharField(max_length=255, null=True)
 
     Id_Pais = models.ForeignKey(
         MAESTRO_HIS_PAIS,
-         on_delete=models.SET_NULL,null=True
+        on_delete=models.SET_NULL, null=True
 
     )
 
@@ -365,52 +425,4 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO(models.Model):
         db_table = 'MAESTRO_HIS_NUEVO_ARCHIVO_PLANO'
 
 
-
 # Plugins Extras
-
-#class DATA_CNV:
-    
-#NV	 Estado	 Cod_EESS	EESS	Primer_Apellido	Segundo Nombres	Edad	Fec_Nac	Gest_Sem	Tipo_Doc	Documento	Cod_EESS_Prenatal	EESS_Prenatal	Fecha	Hora	Sexo	Peso	Talla	Apgar	Perímetro_cefalico	Perímetro_toracico	Malf_Congénita	Tiempo_Lig_Cord	Lactancia_precoz	Primer_Apellido2	Segundo3	Nombres4	Profesión	NColegio	Fecha_Registro	Primer_Apellido5	Segundo_Apellido	Nombres6	Nro	Cond_parto	Ok	Mes	EDAD	Grupo Etareo	neo_his	Bajo_Peso	Gesta Sem	AP	:	AR	A  P G A R	Val_apar	Talla	TA	LLA	his_neo	Crtl_Pre_Nat_en_EESS Apellido_y_Nombre_del_Profesional
-
-class DATA_CNV(models.Model):
-    CNV = models.BigIntegerField(primary_key=True)
-    Estado = models.CharField(max_length=255, blank=True, null=True)
-    CodEESS = models.CharField(max_length=255, blank=True, null=True)
-    EESS = models.CharField(max_length=255, blank=True, null=True)
-    pApellidoMadre = models.CharField(max_length=255, blank=True, null=True)
-    sApellidoMadre = models.CharField(max_length=255, blank=True, null=True)
-    nombresMadre = models.CharField(max_length=255, blank=True, null=True)
-    Edad = models.IntegerField(blank=True, null=True)
-    FecNac = models.CharField(max_length=255,blank=True, null=True)
-    Gest_Sem = models.IntegerField(blank=True, null=True)
-    TipoDoc = models.CharField(max_length=255, blank=True, null=True)
-    Documento = models.CharField(max_length=255, blank=True, null=True)
-    Teléfono = models.CharField(max_length=255, blank=True, null=True)
-    CodEESSPrenatal = models.CharField(max_length=255, blank=True, null=True)
-    EESSPrenatal = models.CharField(max_length=255, blank=True, null=True)
-    Fecha = models.CharField(max_length=255,blank=True, null=True)
-    Hora = models.TimeField(blank=True, null=True)
-    Sexo = models.CharField(max_length=255, blank=True, null=True)
-    Peso_g = models.FloatField(blank=True, null=True)
-    Talla_cm = models.FloatField(blank=True, null=True)
-    Apgar = models.FloatField(blank=True, null=True)
-    Perímetrocefálico = models.FloatField(blank=True, null=True)
-    Perímetrotorácico = models.FloatField(blank=True, null=True)
-    Malfcongénita = models.CharField(max_length=255, blank=True, null=True)
-    TiempoLigCord = models.CharField(max_length=255, blank=True, null=True)
-    Lactanciaprecoz = models.CharField(max_length=255, blank=True, null=True)
-    pApellidoProfesional = models.CharField(max_length=255, blank=True, null=True)
-    sApellidoProfesional = models.CharField(max_length=255, blank=True, null=True)
-    nombresProfesional = models.CharField(max_length=255, blank=True, null=True)
-    Profesión = models.CharField(max_length=255, blank=True, null=True)
-    NColegio = models.CharField(max_length=255, blank=True, null=True)
-    FechaRegistro = models.CharField(max_length=255,blank=True, null=True)
-    pApellidoResgistrador = models.CharField(max_length=255, blank=True, null=True)
-    sApellidoRegistrador = models.CharField(max_length=255, blank=True, null=True)
-    nombresRegistrador = models.CharField(max_length=255, blank=True, null=True)
-    tipoPartoId = models.IntegerField(blank=True, null=True)
-    tipoParto = models.CharField(max_length=255, blank=True, null=True)
-    
-    class Meta:
-        verbose_name_plural = "DATA_CNV"
-        db_table = 'DATA_CNV'   

@@ -36,12 +36,11 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO_CSV_View_TEST(APIView, FileValidationMixin
             delimiter = request.data.get('delimiter')
             encode = request.data.get('encode')
             dataframe = DataValidator(csv_file)
-            
-            
+
             # procesar y verificar
             dataframe.validate_file_type()
             # dataframe.read_csv_file(use_cols=range(43),drop_cols=['condicion_gestante', 'peso_pregestacional', 'gruporiesgo_desc'])
-            dataframe.read_csv_file(delimiter=delimiter,encoding=encode)
+            dataframe.read_csv_file(delimiter=delimiter, encoding=encode)
             dataframe.indexar()  # creamos un id Unico
             # dataframe.split_data(3000)
 
@@ -52,12 +51,14 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO_CSV_View_TEST(APIView, FileValidationMixin
             # operaciones y validaciones1
             objectDatrame = ObjectOperations(dataframe.data)
             objectDatrame.get_field_names_from_instance(instance)
-            objectDatrame.validate_columns(objectDatrame.field_names)
+            objectDatrame.validate_columns(
+                objectDatrame.field_names)
 
             print(objectDatrame.data)
 
             # Creacion de objetos con abase de datos
-            database = ServiceDatabase(objectDatrame.data, identifier_field, model)
+            database = ServiceDatabase(
+                objectDatrame.data, identifier_field, model)
 
             related_models = {
                 'Id_Ups': MAESTRO_HIS_UPS,
@@ -75,7 +76,8 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO_CSV_View_TEST(APIView, FileValidationMixin
             database.create_objects_from_data_nominal(related_models)
 
             database.saveData(ignore_conflicts=True)
-            is_data_added = (database.data_count_save - database.count_data_before) > 0
+            is_data_added = (database.data_count_save -
+                             database.count_data_before) > 0
 
             end_time = time.time()
             elapsed_time = end_time - start_time

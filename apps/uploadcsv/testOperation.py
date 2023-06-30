@@ -158,8 +158,11 @@ class DataExcelCNVValidator(DataValidator):
         # Eliminamos las columnas sin nombre, los caracteres no alfabeticos y no numericos
         self.data = self.data.loc[:, ~
                                   self.data.columns.str.contains('^Unnamed')]
+        # self.data.columns = self.data.columns.str.replace(
+        #    "[°º. )]", "", regex=True).str.replace('(', '_')
         self.data.columns = self.data.columns.str.replace(
-            "[°º. )]", "", regex=True).str.replace('(', '_')
+            r"[°º. )]", "").str.replace('(', '_', regex=False)
+
         self.data = self.data.rename(columns=rename_columns)
 
         # Dividir la data en dos clases
@@ -223,10 +226,13 @@ class ObjectOperations:
         self.data = data
         self.field_names = []
 
-    def validate_columns(self, expected_columns):
+    def validate_columns(self, expected_columns, excluded_values=[]):
+        expected_columns = [
+            field for field in expected_columns if field not in excluded_values]
 
         missing_columns = [
             column for column in expected_columns if column not in self.data.columns]
+
         new_columns = [
             column for column in self.data.columns if column not in expected_columns]
 
@@ -292,7 +298,7 @@ class ServiceDatabase:
             try:
                 fk_object, _ = fk_model.objects.get_or_create(pk=fk_value)
             except fk_model.DoesNotExist:
-                # print("El objeto no existe")
+               # print("El objeto no existe")
                 return None
             except Exception as e:
                 # print(f"Error creating object for {fk_field}: {fk_value}")
@@ -303,7 +309,6 @@ class ServiceDatabase:
 
         try:
             for fk_field in foreign_keys.keys():
-
                 self.data[fk_field] = self.data[fk_field].apply(
                     lambda fk_value: get_fk_object(fk_field, fk_value))
 
@@ -342,8 +347,9 @@ class ServiceDatabase:
                 if id_value not in unique_objects:
                     unique_objects[id_value] = self.model(**row_dict)
                 else:
-                    print("algo paso con", id_value)
-                    
+                    return ""
+                    # print("algo paso con", id_value)
+
             self.objects = list(unique_objects.values())
             self.added_objects_count = len(self.objects)
 
