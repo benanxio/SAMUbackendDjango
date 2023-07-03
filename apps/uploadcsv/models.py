@@ -223,7 +223,7 @@ class DATA_CNV(models.Model):
     Gest_Sem = models.IntegerField(blank=True, null=True)
     TipoDoc = models.CharField(max_length=255, blank=True, null=True)
     Documento = models.CharField(max_length=255, blank=True, null=True)
-    Teléfono = models.CharField(max_length=255, blank=True, null=True)
+    Telefono = models.CharField(max_length=255, blank=True, null=True)
     CodEESSPrenatal = models.CharField(max_length=255, blank=True, null=True)
     EESSPrenatal = models.CharField(max_length=255, blank=True, null=True)
     Fecha = models.CharField(max_length=255, blank=True, null=True)
@@ -232,9 +232,9 @@ class DATA_CNV(models.Model):
     Peso_g = models.FloatField(blank=True, null=True)
     Talla_cm = models.FloatField(blank=True, null=True)
     Apgar = models.FloatField(blank=True, null=True)
-    Perímetrocefálico = models.FloatField(blank=True, null=True)
-    Perímetrotorácico = models.FloatField(blank=True, null=True)
-    Malfcongénita = models.CharField(max_length=255, blank=True, null=True)
+    Perimetrocefalico = models.FloatField(blank=True, null=True)
+    Perimetrotoracico = models.FloatField(blank=True, null=True)
+    Malfcongenita = models.CharField(max_length=255, blank=True, null=True)
     TiempoLigCord = models.CharField(max_length=255, blank=True, null=True)
     Lactanciaprecoz = models.CharField(max_length=255, blank=True, null=True)
     pApellidoProfesional = models.CharField(
@@ -243,7 +243,7 @@ class DATA_CNV(models.Model):
         max_length=255, blank=True, null=True)
     nombresProfesional = models.CharField(
         max_length=255, blank=True, null=True)
-    Profesión = models.CharField(max_length=255, blank=True, null=True)
+    Profesion = models.CharField(max_length=255, blank=True, null=True)
     NColegio = models.CharField(max_length=255, blank=True, null=True)
     FechaRegistro = models.CharField(max_length=255, blank=True, null=True)
     pApellidoResgistrador = models.CharField(

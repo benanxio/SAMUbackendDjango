@@ -32,6 +32,12 @@ class DATA_CNV_CSV_View(APIView):
             # leer
             csv_file = request.FILES.get('csv_file')
             dataframe = DataExcelCNVValidator(csv_file)
+            
+            columns_to_convert = [
+                'Edad', 'Gest(Sem)', 'Peso(g)', 'Talla(cm)', 'Apgar', 'Perímetro cefálico', 'Perímetro torácico', 'Unnamed: 33', 'Unnamed: 35'
+            ]
+            
+            columns_to_ignore = ["Cod. EESS","Cod. EESS Prenatal","N° Colegio","Teléfono","CNV"]
 
             rename_columns = {
                 "PrimerApellido": "pApellidoMadre",
@@ -47,8 +53,11 @@ class DATA_CNV_CSV_View(APIView):
 
             # procesar y verificar
             dataframe.validate_file_type()
-            dataframe.read_excel_file()
-            dataframe.clean_data(rename_columns=rename_columns)
+            dataframe.read_excel_file(columns_to_convert=columns_to_convert, columns_to_str=columns_to_ignore)
+            # Dividir la data en dos clases
+            dataframe.divide_type_birth()
+            dataframe.clean_data(columns_to_ignore=columns_to_ignore)
+            dataframe.remove_special_characters_from_columns(rename_columns=rename_columns)
             dataframe.replace_none_strange_values()
 
             # operaciones y validaciones1

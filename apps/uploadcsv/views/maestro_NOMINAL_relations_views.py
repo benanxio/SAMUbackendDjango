@@ -40,7 +40,7 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO_CSV_View_TEST(APIView, FileValidationMixin
             # procesar y verificar
             dataframe.validate_file_type()
             # dataframe.read_csv_file(use_cols=range(43),drop_cols=['condicion_gestante', 'peso_pregestacional', 'gruporiesgo_desc'])
-            dataframe.read_csv_file(delimiter=delimiter, encoding=encode)
+            dataframe.read_csv_file(delimiter=delimiter, encoding=encode,columns_to_str=['Id_Paciente'])
             dataframe.indexar()  # creamos un id Unico
             # dataframe.split_data(3000)
 
@@ -53,8 +53,6 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO_CSV_View_TEST(APIView, FileValidationMixin
             objectDatrame.get_field_names_from_instance(instance)
             objectDatrame.validate_columns(
                 objectDatrame.field_names)
-
-            print(objectDatrame.data)
 
             # Creacion de objetos con abase de datos
             database = ServiceDatabase(

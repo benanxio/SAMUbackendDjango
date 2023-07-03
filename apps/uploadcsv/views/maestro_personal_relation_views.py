@@ -52,8 +52,6 @@ class MAESTRO_HIS_PERSONAL_CSV_View(APIView, FileValidationMixin):
             objectDatrame.get_field_names_from_instance(instance)
             objectDatrame.validate_columns(objectDatrame.field_names)
             
-            print(objectDatrame.data)
-            
             
             # Creacion de objetos con abase de datos 
             database = ServiceDatabase(objectDatrame.data,identifier_field,model)
