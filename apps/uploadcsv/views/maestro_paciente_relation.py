@@ -132,7 +132,7 @@ class MAESTRO_HIS_PACIENTE_Delete_View(APIView):
 
 
 class MAESTRO_HIS_PACIENTE_List_View(generics.ListAPIView):
-
+    permission_classes = [AllowAny]
     queryset = MAESTRO_HIS_PACIENTE.objects.all()
     serializer_class = MaestroPacienteSerializer
     pagination_class = CustomPageNumberPagination
