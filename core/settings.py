@@ -1,3 +1,4 @@
+from decouple import config
 import environ
 import logging
 import os
@@ -6,7 +7,6 @@ from pathlib import Path
 env = environ.Env()
 environ.Env.read_env()
 ENVIRONMENT = env
-
 # Configuración del registro
 logging.basicConfig(level=logging.DEBUG)
 
@@ -222,7 +222,7 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 # Others
 
 SITE_DOMAIN = os.environ.get("SITE_DOMAIN")
-DOMAIN = os.environ.get("DOMAIN")
+DOMAIN = config('DOMAIN')
 SITE_NAME = ('SAMU ILO')
 
 SITE_ID = 1
