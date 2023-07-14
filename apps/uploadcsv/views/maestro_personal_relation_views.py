@@ -20,17 +20,15 @@ from rest_framework.views import APIView
 class MAESTRO_HIS_PERSONAL_CSV_View(APIView, FileValidationMixin):
     permission_classes = [AllowAny]
 
-
-            
     def post(self, request):
         start_time = time.time()
-        
+
         model = MAESTRO_HIS_PERSONAL
         instance = model()
         identifier_field = "Id_Personal"
-        
+
         try:
-            #leer
+            # leer
             csv_file = request.FILES.get('csv_file')
             dataframe = DataValidator(csv_file)
             delimiter = request.data.get('delimiter')
@@ -38,27 +36,25 @@ class MAESTRO_HIS_PERSONAL_CSV_View(APIView, FileValidationMixin):
 
             # procesar y verificar
             dataframe.validate_file_type()
-            dataframe.read_csv_file(delimiter=delimiter,encoding=encode)
-            
-            #dataframe.split_data(3000)
-            
+            dataframe.read_csv_file(delimiter=delimiter, encoding=encode)
+
+            # dataframe.split_data(3000)
+
             dataframe.clean_data()
 
             dataframe.replace_none_strange_values()
-            
-            
-            #operaciones y validaciones1
-            objectDatrame = ObjectOperations(dataframe.data)    
+
+            # operaciones y validaciones1
+            objectDatrame = ObjectOperations(dataframe.data)
             objectDatrame.get_field_names_from_instance(instance)
             objectDatrame.validate_columns(objectDatrame.field_names)
-            
+
             print(objectDatrame.data)
-            
-            
-            # Creacion de objetos con abase de datos 
-            database = ServiceDatabase(objectDatrame.data,identifier_field,model)
-            
-            
+
+            # Creacion de objetos con abase de datos
+            database = ServiceDatabase(
+                objectDatrame.data, identifier_field, model)
+
             related_models = {
                 'Id_Tipo_Documento': MAESTRO_HIS_TIPO_DOC,
                 'Id_Condicion': MAESTRO_HIS_CONDICION_CONTRATO,
@@ -66,35 +62,31 @@ class MAESTRO_HIS_PERSONAL_CSV_View(APIView, FileValidationMixin):
                 'Id_Colegio': MAESTRO_HIS_COLEGIO,
                 'Id_Establecimiento': MAESTRO_HIS_ESTABLECIMIENTO,
             }
-            
+
             database.create_objects_from_data_nominal(related_models)
-            
+
             database.saveData(ignore_conflicts=True)
-            
-            is_data_added =  (database.data_count_save - database.count_data_before ) > 0            
-            
-            end_time = time.time()  
+
+            is_data_added = (database.data_count_save -
+                             database.count_data_before) > 0
+
+            end_time = time.time()
             elapsed_time = end_time - start_time
-            
-        
-            
+
             result = ResultType(
                 message=f'{database.data_count_save - database.count_data_before} registros agregados con éxito.' if is_data_added else 'Los registros existen en la base de datos.',
                 success_type=SuccessType.DATA_PROCESSED,
-                total_data_csv_original= dataframe.count_data_orignal_csv,
+                total_data_csv_original=dataframe.count_data_orignal_csv,
                 total_despues_procesamiento=dataframe.count_data_processing,
                 total_objetos_creados=database.added_objects_count,
                 total_datos_guardados_database=database.data_count_save,
                 time=elapsed_time,
-             )
-                           
+            )
+
             return Response(result, status=status.HTTP_201_CREATED)
 
-
-
-            
         except CustomError as e:
-            end_time = time.time()  
+            end_time = time.time()
             elapsed_time = end_time - start_time
             return Response(
                 {
@@ -129,13 +121,11 @@ class MAESTRO_HIS_PERSONAL_CSV_View(APIView, FileValidationMixin):
                 'message': f"Se encontró un problema con el tipo de objeto utilizado: {str(e)}"
             }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            logger.exception("Ocurrió un error no manejado específicamente")  
+            logger.exception("Ocurrió un error no manejado específicamente")
             return Response({
                 'error_type': 'Error genérico',
                 'message': f"Ocurrió un error no especificado: {str(e)}"
             }, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 class MAESTRO_HIS_PERSONAL_Delete_View(APIView):
