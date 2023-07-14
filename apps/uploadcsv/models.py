@@ -63,13 +63,6 @@ class MAESTRO_HIS_CIE_CPMS(models.Model):
     Descripcion_Tipo_Item = models.TextField(null=True, blank=True)
     Fg_Estado = models.IntegerField(null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        self.Descripcion_Item = corregir_codificacion(self.Descripcion_Item)
-        self.Descripcion_Tipo_Item = corregir_codificacion(
-            self.Descripcion_Tipo_Item)
-
-        super(MAESTRO_HIS_CIE_CPMS, self).save(*args, **kwargs)
-
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_CIE_CPMS"
         db_table = "MAESTRO_HIS_CIE_CPMS"
@@ -331,8 +324,8 @@ class MAESTRO_HIS_PACIENTE(models.Model):
 
     Fecha_Alta = models.CharField(max_length=255, null=True)
     Fecha_Modificacion = models.CharField(max_length=255, null=True)
-    CNV = models.ForeignKey(
-        DATA_CNV, on_delete=models.SET_NULL, null=True, blank=True)
+    # CNV = models.ForeignKey(
+    #    DATA_CNV, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "MAESTRO_HIS_PACIENTE"

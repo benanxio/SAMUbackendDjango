@@ -25,6 +25,7 @@ from apps.uploadcsv.views.maestro_pais_views import MAESTRO_HIS_PAIS_CSV_View, M
     MAESTRO_HIS_PAIS_List_View
 from apps.uploadcsv.views.maestro_personal_relation_views import MAESTRO_HIS_PERSONAL_CSV_View, \
     MAESTRO_HIS_PERSONAL_Delete_View, MAESTRO_HIS_PERSONAL_List_View
+from apps.uploadcsv.views.maestro_personal_relation_views_____copy import MAESTRO_HIS_PERSONAL_CSV_View_test
 from apps.uploadcsv.views.maestro_profesion_relation_views import MAESTRO_HIS_PROFESION_CSV_View, \
     MAESTRO_HIS_PROFESION_Delete_View, MAESTRO_HIS_PROFESION_List_View
 from apps.uploadcsv.views.maestro_registrador_relation_views import MAESTRO_HIS_REGISTRADOR_CSV_View, \

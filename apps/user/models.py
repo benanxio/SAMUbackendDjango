@@ -4,14 +4,16 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
+
     def create_user(self, email, password=None, **extra_fields):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        user.set_password(password)
+        user.save()
         Settings.objects.create(user=user)
         Profile.objects.create(user=user)
-
         return user
 
     def create_superuser(self, email, password, **extra_fields):
@@ -27,6 +29,8 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     nickname = models.CharField(max_length=30, unique=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
+    photo_url = models.CharField(
+        max_length=255, default="https://res.cloudinary.com/ddksrkond/image/upload/v1688411778/default_dfvymc.webp")
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

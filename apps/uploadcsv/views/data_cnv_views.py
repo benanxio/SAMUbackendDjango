@@ -1,21 +1,17 @@
 from venv import logger
 from django.db import connection
-
 from django.forms import ValidationError
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework import generics
-
 from apps.uploadcsv.custom_errors import CustomError
 from apps.uploadcsv.utils import CustomPageNumberPagination
 from apps.uploadcsv.sucesss_custom import ResultType, SuccessType
 from apps.uploadcsv.testOperation import DataExcelCNVValidator, ObjectOperations, ServiceDatabase
-
 from apps.uploadcsv.serializers import DATA_CNVSerializer
 from apps.uploadcsv.models import DATA_CNV
-
 import time
 
 
@@ -24,7 +20,6 @@ class DATA_CNV_CSV_View(APIView):
 
     def post(self, request):
         start_time = time.time()
-
         model = DATA_CNV
         instance = DATA_CNV()
         identifier_field = "CNV"
@@ -32,13 +27,11 @@ class DATA_CNV_CSV_View(APIView):
             # leer
             csv_file = request.FILES.get('csv_file')
             dataframe = DataExcelCNVValidator(csv_file)
-            
             columns_to_convert = [
                 'Edad', 'Gest(Sem)', 'Peso(g)', 'Talla(cm)', 'Apgar', 'Perímetro cefálico', 'Perímetro torácico', 'Unnamed: 33', 'Unnamed: 35'
             ]
-            
-            columns_to_ignore = ["Cod. EESS","Cod. EESS Prenatal","N° Colegio","Teléfono","CNV"]
-
+            columns_to_ignore = [
+                "Cod. EESS", "Cod. EESS Prenatal", "N° Colegio", "Teléfono", "CNV"]
             rename_columns = {
                 "PrimerApellido": "pApellidoMadre",
                 "Segundo": "sApellidoMadre",
@@ -50,33 +43,29 @@ class DATA_CNV_CSV_View(APIView):
                 "SegundoApellido": "sApellidoRegistrador",
                 "Nombres2": "nombresRegistrador"
             }
-
             # procesar y verificar
             dataframe.validate_file_type()
-            dataframe.read_excel_file(columns_to_convert=columns_to_convert, columns_to_str=columns_to_ignore)
+            dataframe.read_excel_file(
+                columns_to_convert=columns_to_convert, columns_to_str=columns_to_ignore)
             # Dividir la data en dos clases
             dataframe.divide_type_birth()
             dataframe.clean_data(columns_to_ignore=columns_to_ignore)
-            dataframe.remove_special_characters_from_columns(rename_columns=rename_columns)
+            dataframe.remove_special_characters_from_columns(
+                rename_columns=rename_columns)
             dataframe.replace_none_strange_values()
-
             # operaciones y validaciones1
             objectDatrame = ObjectOperations(dataframe.data)
             objectDatrame.get_field_names_from_instance(instance)
             objectDatrame.validate_columns(objectDatrame.field_names)
-
             # Creacion de objetos con abase de datos
             database = ServiceDatabase(
                 objectDatrame.data, identifier_field, model)
-
             database.create_objects_from_data()
             database.saveData()
             is_data_added = (database.data_count_save -
                              database.count_data_before) > 0
-
             end_time = time.time()
             elapsed_time = end_time - start_time
-
             result = ResultType(
                 message=f'{database.data_count_save - database.count_data_before} registros agregados con éxito.' if is_data_added else 'Los registros existen en la base de datos.',
                 success_type=SuccessType.DATA_PROCESSED,
@@ -86,21 +75,17 @@ class DATA_CNV_CSV_View(APIView):
                 total_datos_guardados_database=database.data_count_save,
                 time=elapsed_time,
             )
-
             return Response(result, status=status.HTTP_201_CREATED)
-
         except CustomError as e:
             end_time = time.time()
             elapsed_time = end_time - start_time
             return Response(
                 {
-
                     'error_type': e.error_type.value,
                     'message': e.message,
                     'details': e.details,
                     'expected_columns': e.expected_columns,
                     'time': elapsed_time,
-
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -144,7 +129,6 @@ class DATA_CNV_Delete_View(APIView):
 
 
 class DATA_CNV_List_View(generics.ListAPIView):
-
     queryset = DATA_CNV.objects.all()
     serializer_class = DATA_CNVSerializer
     pagination_class = CustomPageNumberPagination
