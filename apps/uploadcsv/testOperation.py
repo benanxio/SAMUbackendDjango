@@ -3,6 +3,7 @@ import pandas as pd
 from apps.uploadcsv.custom_errors import CustomError, ErrorType
 from django.db import models
 from django.db import transaction
+import unicodedata
 
 
 class DataValidator:
@@ -94,26 +95,33 @@ class DataExcelCNVValidator(DataValidator):
             )
 
     def decimal_converter(self, value, decimal=','):
-
+        value = value.strip()
         replace = ',' if decimal == '.' else '.'
         try:
             return float(value.replace(decimal, replace))
         except ValueError:
             return value
 
-    def read_excel_file(self, skiprows=[0, 1, 2], skipfooter=1, decimal=',',
-                        columns_to_convert=['CNV', 'Cod. EESS', 'Edad', 'Gest(Sem)', 'Documento', 'Teléfono', 'Cod. EESS Prenatal', 'Peso(g)', 'Talla(cm)', 'Apgar', 'Perímetro cefálico', 'Perímetro torácico', 'N° Colegio', 'Unnamed: 33', 'Unnamed: 35']):
+    def read_excel_file(self, skiprows=[0, 1, 2], skipfooter=1, decimal=',', columns_to_convert=[], columns_to_str=[]):
 
         # Agrega los nombres de las columnas que deseas convertir
         converters_dict = {}
+        convert_to_str_dict = {}
 
         if len(columns_to_convert) > 0:
-            converters_dict = {col: lambda x, dec = decimal: self.decimal_converter(
-                value=x, decimal=dec) for col in columns_to_convert}
+            converters_dict = {col: lambda x, decimal = decimal: self.decimal_converter(
+                value=x, decimal=decimal) for col in columns_to_convert}
+
+        if len(columns_to_str) > 0:
+            convert_to_str_dict = {col: str for col in columns_to_str}
 
         self.data = pd.read_excel(
-            self.file, skiprows=skiprows, skipfooter=skipfooter, converters=converters_dict)
-        self.count_data_orignal_csv = self.data.shape[0]
+            self.file,
+            skiprows=skiprows,
+            skipfooter=skipfooter,
+            converters=converters_dict,
+            dtype=convert_to_str_dict
+        )
 
     def divide_type_birth(self):
 
@@ -125,7 +133,7 @@ class DataExcelCNVValidator(DataValidator):
 
         # Se crea una nueva columna 'tipoParto' en ambos dataframes con los identificadores
 
-        posiciones = self.data[self.data['N'] == 1].index
+        posiciones = self.data[self.data['Nº'] == 1].index
 
         if (len(posiciones) > 1):
             minP, maxP = posiciones
@@ -148,25 +156,10 @@ class DataExcelCNVValidator(DataValidator):
             self.data = dfpartoGen.assign(
                 tipoPartoId=tipoPartoId, tipoParto=tipoParto)
 
-    def clean_data(self, columns_to_string=[], columns_to_int=[], columns_to_float=[], rename_columns={}):
+    def clean_data(self, columns_to_ignore=[]):
+        # ------------------- Data sin filas y columnas necesarias-------
 
-        # Eliminamos las columnas sin nombre, los caracteres no alfabeticos y no numericos
-        self.data = self.data.loc[:, ~
-                                  self.data.columns.str.contains('^Unnamed')]
-        # self.data.columns = self.data.columns.str.replace(
-        #    "[°º. )]", "", regex=True).str.replace('(', '_')
-        self.data.columns = self.data.columns.str.replace(
-            r"[°º. )]", "").str.replace('(', '_', regex=False)
-
-        self.data = self.data.rename(columns=rename_columns)
-
-        # Dividir la data en dos clases
-        self.divide_type_birth()
-        # Eliminar la columna N de numeracion del dataframe
-        self.data = self.data.drop('N', axis=1)
-
-        # Los decimal es y otros tipos estan como objetos, intetamos inferir que tipo de datos deverian ser
-        self.data = self.data.infer_objects()
+        self.count_data_orignal_csv = self.data.shape[0]
 
         # Logica HEREDADA
 
@@ -176,29 +169,47 @@ class DataExcelCNVValidator(DataValidator):
         # Convertir columnas numéricas a tipo float
         num_cols = self.data.select_dtypes(
             include=[np.number]).columns.tolist()
-
         self.data[num_cols] = self.data[num_cols].astype(float)
+
+        # Aplicar infer_objects() a las columnas no omitidas en columns_to_ignore
+        columns_to_process = self.data.columns[~self.data.columns.isin(
+            columns_to_ignore)]
+        self.data[columns_to_process] = self.data[columns_to_process].infer_objects()
 
         # Convertir valores numéricos a None cuando corresponda
         self.data[num_cols] = self.data[num_cols].applymap(
             lambda x: None if pd.isna(x) or pd.isnull(x) else int(x))
 
-        # opcional convertir columans a int o string o float
-
         # Convertir columnas de fecha a tipo datetime y reemplazar NaT con None
         date_cols = self.data.select_dtypes(
             include='datetime').columns.tolist()
-
         for col in date_cols:
             self.data[col] = pd.to_datetime(
                 self.data[col], errors='coerce').dt.date
             self.data[col] = self.data[col].apply(
                 lambda x: None if pd.isna(x) else x)
 
+        # Reemplazar NaN restantes con -1 y luego convertir de -1 a None
         self.data = self.data.fillna(value=-1)
-        # Luego convertir de -1 a None
         self.data.replace(to_replace=-1, value=None, inplace=True)
-        self.count_data_processing = len(self.data)
+
+        self.count_data_processing = self.data.shape[0]
+
+    def remove_accents(self, text):
+        normalized_text = unicodedata.normalize('NFKD', text)
+        return ''.join(c for c in normalized_text if not unicodedata.combining(c))
+
+    def remove_special_characters_from_columns(self, rename_columns={}):
+        # Eliminar columnas sin nombre, caracteres no alfanuméricos y realizar el renombrado
+        self.data = self.data.loc[:, ~
+                                  self.data.columns.str.contains('^Unnamed')]
+        self.data.columns = self.data.columns.str.replace(
+            r"[°º.) ]", "", regex=True).str.replace('(', '_', regex=False)
+        self.data.rename(columns=rename_columns, inplace=True)
+        # Eliminar la columna N de numeracion del dataframe
+        self.data = self.data.drop('N', axis=1)
+        self.data.columns = [self.remove_accents(
+            col) for col in self.data.columns]
 
     def replace_none_strange_values(self, values_=[]):
         return super().replace_none_strange_values(values_)
