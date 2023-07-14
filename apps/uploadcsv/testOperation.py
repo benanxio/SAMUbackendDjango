@@ -346,11 +346,9 @@ class ServiceDatabase:
             )
 
     def saveData(self, ignore_conflicts=False, batch_size=2000):
-
-        print(len(self.objects))
-
+        print(self.added_objects_count)
         with transaction.atomic():
-            for i in range(0, len(self.objects), batch_size):
+            for i in range(0, self.added_objects_count, batch_size):
                 batch_data = self.objects[i:i+batch_size]
                 self.model.objects.bulk_create(
                     batch_data, ignore_conflicts=ignore_conflicts)
