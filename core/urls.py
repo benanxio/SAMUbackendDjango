@@ -3,10 +3,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 
-
 from django.conf.urls.static import static
 from django.contrib.sites.models import Site
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,7 +14,6 @@ urlpatterns = [
     path("api/", include("apps.uploadcsv.urls")),
     path("api/reports/", include("apps.reports.urls"))
 ]
-
 
 # urlpatterns += [re_path(r'^.*',
 #                        TemplateView.as_view(template_name='index.html'))]
