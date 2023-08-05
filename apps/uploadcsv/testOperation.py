@@ -74,6 +74,10 @@ class DataValidator:
         # Luego convertir de -1 a None
         self.data.replace(to_replace=-1, value=None, inplace=True)
         self.count_data_processing = len(self.data)
+        
+        total_size = self.data.memory_usage().sum()
+        
+        print(f'Total size: {total_size / 1048576}')
 
     def replace_none_strange_values(self, values_=[]):
         
@@ -354,11 +358,11 @@ class ServiceDatabase:
                 row_dict = row.to_dict()
                 id_value = row_dict[self.identifier_field]
                 if id_value not in unique_objects:
+                    
                     unique_objects[id_value] = self.model(**row_dict)
                 else:
-                    return ""
-                    # print("algo paso con", id_value)
-
+                    pass
+            
             self.objects = list(unique_objects.values())
             self.added_objects_count = len(self.objects)
 
@@ -370,8 +374,8 @@ class ServiceDatabase:
             )
 
 
-    def saveData(self, ignore_conflicts=False, batch_size=2000):
-        print(self.added_objects_count)
+    def saveData(self, ignore_conflicts=False, batch_size=20000):
+        print(f"Registros totales {self.added_objects_count}")
         with transaction.atomic():
             for i in range(0, self.added_objects_count, batch_size):
                 batch_data = self.objects[i:i+batch_size]

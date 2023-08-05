@@ -40,7 +40,11 @@ class MAESTRO_HIS_NUEVO_ARCHIVO_PLANO_CSV_View_TEST(APIView, FileValidationMixin
             # procesar y verificar
             dataframe.validate_file_type()
             # dataframe.read_csv_file(use_cols=range(43),drop_cols=['condicion_gestante', 'peso_pregestacional', 'gruporiesgo_desc'])
-            dataframe.read_csv_file(delimiter=delimiter, encoding=encode,columns_to_str=['Id_Paciente'])
+            dataframe.read_csv_file(
+                    delimiter=delimiter,
+                    encoding=encode,columns_to_str=['Id_Paciente'],
+                    drop_cols=['condicion_gestante', 'peso_pregestacional', 'gruporiesgo_desc']
+                )
             dataframe.indexar()  # creamos un id Unico
             # dataframe.split_data(3000)
 
